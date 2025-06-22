@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import achievementsData from '../data/achievements.json';
+
+const availableYears = Object.keys(achievementsData).sort((a, b) => Number(b) - Number(a));
+---
+<Layout title="Achievements | SBHS Robotics 750">
+  <div class="container">
+    <header class="page-header">
+      <h1 class="text-glow-gold">Team Achievements</h1>
+      <div id="year-selector" class="year-selector">
+        {availableYears.map((year, index) => (
+          <a href="#" data-year={year} class:list={{ active: index === 0 }}>{year}</a>
+        ))}
+      </div>
+    </header>
+
+    <div id="achievements-content">
+      {availableYears.map((year, index) => (
+        <div class:list={['year-content', { hidden: index !== 0 }]} data-content-year={year}>
+          <ul class="achievements-list">
+            {achievementsData[year].competitions.map(comp => (
+              <li>
+                <div class="achievement-item">
+                  <div>
+                    <p class="date">{comp.date}</p>
+                    <h3>{comp.name}</h3>
+                    <div class="achievement-awards">
+                      {comp.awards.map(award => (
+                        <span class="award-badge">{award}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <a href={comp.eventUrl} target="_blank" class="event-link-btn">
+                    View Event &rarr;
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <script is:inline>
+    // This script is identical to the roster page script for switching years.
+    const yearSelector = document.getElementById('year-selector');
+    const contentContainer = document.getElementById('achievements-content');
+
+    yearSelector.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = e.target;
+      if (target.tagName === 'A') {
+        const year = target.dataset.year;
+        yearSelector.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+        target.classList.add('active');
+        contentContainer.querySelectorAll('.year-content').forEach(div => {
+          if (div.dataset.contentYear === year) {
+            div.classList.remove('hidden');
+          } else {
+            div.classList.add('hidden');
+          }
+        });
+      }
+    });
+  </script>
+</Layout>

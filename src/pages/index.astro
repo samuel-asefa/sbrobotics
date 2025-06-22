@@ -1,16 +1,57 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
+<Layout title="Home | SBHS Robotics">
+  <section class="hero">
+    <div class="hero-logo-container animate-float">
+      <div class="hero-logo-pulse"></div>
+      <h1 class="hero-logo-text text-gradient-gold text-glow-gold">
+        750
+      </h1>
+    </div>
+    <h2>South Brunswick Robotics</h2>
+    <p>
+      United by core values of innovation, teamwork, and excellence, we strive to push the boundaries of robotics and inspire the next generation of engineers.
+    </p>
+  </section>
+  
+  <section class="stats-section">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <div class="number">485</div>
+        <div class="label">Teams in New Jersey</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">13,686</div>
+        <div class="label">MS/HS Teams Worldwide</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">831</div>
+        <div class="label">HS Teams at Worlds '25</div>
+      </div>
+    </div>
+  </section>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <section class="recognition-section container">
+    <div class="recognition-grid">
+      <img src="/images/state-recognition.jpg" alt="Team with local representative"/>
+      <div>
+        <h2 class="text-gradient-gold">Community Recognition</h2>
+        <p>South Brunswick Robotics was recently honored by Mayor Charlie Carley and the Township Council for our achievements in STEM and community involvement, receiving a certificate of recognition on behalf of the township.</p>
+        <div class="press-links">
+          <a href="#">TapInto</a>
+          <a href="#">MyCentralJersey</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonial-section">
+    <div class="container">
+      <div class="testimonial-card">
+        <blockquote>"Joining this team taught me so much more than just engineering. It taught me perseverance, teamwork, and how to handle both success and failure. I'm grateful for the coaches and my teammates who made it an unforgettable experience."</blockquote>
+        <footer>- Alex Chen, Class of '24 Captain</footer>
+      </div>
+    </div>
+  </section>
+</Layout>

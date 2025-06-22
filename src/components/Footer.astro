@@ -1,0 +1,35 @@
+---
+const usefulLinks = [
+    { name: "VEX Robotics", href: "https://www.vexrobotics.com/"},
+    { name: "Robot Events", href: "https://www.robotevents.com/"},
+];
+const orgLinks = [
+    { name: "Roster", href: "/roster/2025" },
+    { name: "Achievements", href: "/achievements/2025" },
+];
+---
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h3>South Brunswick Robotics</h3>
+        <p>750 Ridge Road<br/>Monmouth Junction, NJ 08852</p>
+      </div>
+      <div>
+        <h3>Useful Links</h3>
+        <ul>
+          {usefulLinks.map(link => <li><a href={link.href} target="_blank">{link.name}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <h3>Organization</h3>
+        <ul>
+          {orgLinks.map(link => <li><a href={link.href}>{link.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; {new Date().getFullYear()} South Brunswick Robotics. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>

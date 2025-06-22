@@ -1,0 +1,73 @@
+---
+import Layout from '../layouts/Layout.astro';
+import rosterData from '../data/roster.json';
+
+const availableYears = Object.keys(rosterData).sort((a, b) => Number(b) - Number(a));
+---
+<Layout title="Roster | SBHS Robotics 750">
+  <div class="container">
+    <header class="page-header">
+      <h1 class="text-glow-gold">Team Roster</h1>
+      <div id="year-selector" class="year-selector">
+        {availableYears.map((year, index) => (
+          <a href="#" data-year={year} class:list={{ active: index === 0 }}>{year}</a>
+        ))}
+      </div>
+    </header>
+
+    <div id="roster-content">
+    {availableYears.map((year, index) => (
+      <div class:list={["year-content", { hidden: index !== 0 }]} data-content-year={year}>
+        {Object.entries(rosterData[year]).map(([division, teams]) => (
+          <section class="division-section">
+            <h2 class="division-title text-gradient-gold">{division}</h2>
+            <div class="roster-grid">
+              {Object.entries(teams).map(([teamId, team]) => (
+                <div class="team-card">
+                  <h3>{teamId}</h3>
+                  <ul>
+                    {team.members.map(member => (
+                      <li>
+                        <div class="member-name">{member.name}</div>
+                        <div class="member-role">{member.role}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    ))}
+    </div>
+  </div>
+
+  <script>
+    const yearSelector = document.getElementById('year-selector');
+    const contentContainer = document.getElementById('roster-content');
+
+    yearSelector.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = e.target as HTMLAnchorElement;
+
+      if (target.tagName === 'A') {
+        const year = target.dataset.year;
+
+        // Update active button
+        yearSelector.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+        target.classList.add('active');
+
+        // Show/hide content
+        contentContainer.querySelectorAll('.year-content').forEach(div => {
+          const contentDiv = div as HTMLElement;
+          if (contentDiv.dataset.contentYear === year) {
+            contentDiv.classList.remove('hidden');
+          } else {
+            contentDiv.classList.add('hidden');
+          }
+        });
+      }
+    });
+  </script>
+</Layout>

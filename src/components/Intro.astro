@@ -1,0 +1,32 @@
+<div id="intro-container" class="fixed inset-0 bg-black z-[100] flex items-center justify-center transition-opacity duration-1000">
+    <video
+      src="/intro-video.mp4"
+      autoplay
+      muted
+      playsinline
+      id="intro-video"
+      class="w-full h-full object-cover"
+    ></video>
+    <button id="skip-intro" class="absolute bottom-10 right-10 z-10 text-white bg-black/50 px-4 py-2 rounded hover:bg-red-500 transition-colors">
+      Skip Intro
+    </button>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const introContainer = document.getElementById('intro-container');
+      const introVideo = document.getElementById('intro-video') as HTMLVideoElement;
+      const skipButton = document.getElementById('skip-intro');
+  
+      function hideIntro() {
+        introContainer.classList.add('opacity-0', 'pointer-events-none');
+      }
+  
+      // Hide intro when video ends or when skip is clicked
+      introVideo.addEventListener('ended', hideIntro);
+      skipButton.addEventListener('click', hideIntro);
+  
+      // Optional: Hide intro after a few seconds even if video is long
+      setTimeout(hideIntro, 5000); // Hides after 5 seconds
+    });
+  </script>

@@ -1,0 +1,59 @@
+---
+// This component displays skills data fetched on the client
+---
+<div id="skills-container" class="mt-12 p-6 bg-gray-900/50 rounded-lg">
+    <h2 class="text-2xl font-bold text-center mb-4">VRC High School World Skills Standings</h2>
+    <div id="skills-loader" class="text-center">Loading...</div>
+    <ul id="skills-list" class="space-y-3">
+      </ul>
+  </div>
+  
+  <script>
+    async function fetchSkillsData() {
+      // !! IMPORTANT !!
+      // Replace this with your actual RobotEvents API Bearer Token
+      const BEARER_TOKEN = 'YOUR_API_KEY_HERE';
+      // This is the season ID for "High Stakes" 2024-2025. Update for future seasons.
+      const VRC_HIGH_SCHOOL_SEASON_ID = 182;
+  
+      const skillsList = document.getElementById('skills-list');
+      const loader = document.getElementById('skills-loader');
+  
+      try {
+        const response = await fetch(`https://www.robotevents.com/api/v2/seasons/${VRC_HIGH_SCHOOL_SEASON_ID}/skills?per_page=5`, {
+          headers: {
+            'Authorization': `Bearer ${BEARER_TOKEN}`
+          }
+        });
+  
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.statusText}`);
+        }
+        
+        const skillsData = await response.json();
+        loader.style.display = 'none';
+  
+        skillsData.data.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'flex justify-between items-center bg-gray-800 p-3 rounded';
+          li.innerHTML = `
+            <div class="flex items-center">
+              <span class="text-red-500 font-bold w-12 text-lg">${item.rank}</span>
+              <span class="font-semibold">${item.team.team_name}</span>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-lg">${item.score}</span>
+              <p class="text-xs text-gray-400">${new Date(item.event_end).toLocaleDateString()}</p>
+            </div>
+          `;
+          skillsList.appendChild(li);
+        });
+  
+      } catch (error) {
+        console.error('Failed to fetch skills data:', error);
+        loader.textContent = 'Failed to load skills data. Check API Key.';
+      }
+    }
+  
+    document.addEventListener('DOMContentLoaded', fetchSkillsData);
+  </script>

@@ -1,0 +1,57 @@
+{
+    "2025": {
+      "High School": {
+        "750S": {
+          "members": [
+            { "name": "Zahin Chowdhury", "role": "Captain" },
+            { "name": "Sanskaar Srivastava", "role": "Vice-Captain" }
+          ]
+        },
+        "750B": {
+          "members": [
+            { "name": "Aditya Prabhu", "role": "Vice-President" },
+            { "name": "Mayank Deoras", "role": "Captain" },
+            { "name": "Aayush Chebolu", "role": "Vice-Captain" }
+          ]
+        },
+        "750C": {
+          "members": [
+            { "name": "Shaunak Bhangale", "role": "President" },
+            { "name": "Ganeshan Venu", "role": "Captain" },
+            { "name": "Neil Deshpande", "role": "Vice-Captain" }
+          ]
+        },
+        "750R": {
+          "members": [
+            { "name": "Anika Thakur", "role": "President" },
+            { "name": "Rakshna Ravishankar", "role": "Captain" },
+            { "name": "Yegna Bodepudi", "role": "Vice-Captain" },
+            { "name": "Arjun Gilhotra", "role": "Vice-Captain" }
+          ]
+        },
+        "750E": {
+          "members": [
+            { "name": "Vivaan Shah", "role": "Captain" },
+            { "name": "Zain Mansuri", "role": "Vice-Captain" }
+          ]
+        },"750W": {
+          "members": [
+            { "name": "Arav Pyati", "role": "Captain" },
+            { "name": "Ajay Avasi", "role": "Vice-Captain" },
+            { "name": "Aishi Chell", "role": "Vice-Captain" }
+          ]
+        }
+      }
+    },
+    "2024": {
+      "High School": {
+         "750A": {
+          "members": [
+            { "name": "Past Member A", "role": "Captain" },
+            { "name": "Past Member B", "role": "Programmer" },
+            { "name": "Past Member C", "role": "Builder" }
+          ]
+        }
+      }
+    }
+  }

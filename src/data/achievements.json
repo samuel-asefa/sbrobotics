@@ -1,0 +1,44 @@
+{
+    "2025": {
+      "competitions": [
+        {
+          "date": "05/08/25",
+          "name": "VEX Robotics World Championship",
+          "awards": ["Create Award (World Championship)"],
+          "eventUrl": "#"
+        },
+        {
+          "date": "03/15/25",
+          "name": "New Jersey State Championship",
+          "awards": ["Tournament Finalists", "Think Award"],
+          "eventUrl": "#"
+        }
+      ]
+    },
+    "2024": {
+      "competitions": [
+         {
+          "date": "03/16/24",
+          "name": "Southern New Jersey State Championship",
+          "awards": ["Excellence Award", "Design Award"],
+          "eventUrl": "#"
+        },
+        {
+          "date": "01/20/24",
+          "name": "South Brunswick High School VRC Qualifier",
+          "awards": ["Tournament Finalists"],
+          "eventUrl": "#"
+        }
+      ]
+    },
+     "2023": {
+      "competitions": [
+         {
+          "date": "02/11/23",
+          "name": "Highland Park VRC Tournament",
+          "awards": ["Judges Award"],
+          "eventUrl": "#"
+        }
+      ]
+    }
+  }
