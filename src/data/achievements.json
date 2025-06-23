@@ -90,17 +90,5 @@
           "eventUrl": "#"
         }
       ]
-    },
-    "2023": {
-      "competitions": [
-        {
-          "date": "02/11/23",
-          "name": "Highland Park VRC Tournament",
-          "awards": [
-            { "award": "Tournament Finalists", "team": "750S" }
-          ],
-          "eventUrl": "#"
-        }
-      ]
     }
   }
