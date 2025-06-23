@@ -1,68 +1,99 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro'; // Assuming a general layout file
 import achievementsData from '../data/achievements.json';
+import rosterData from '../data/roster.json';
 
-const availableYears = Object.keys(achievementsData).sort((a, b) => Number(b) - Number(a));
+const years = Object.keys(achievementsData).sort((a, b) => b.localeCompare(a));
+const firstYear = years[0];
+
+const allTeams = new Set();
+Object.values(rosterData).forEach(year => {
+  Object.keys(year['High School']).forEach(team => allTeams.add(team));
+});
 ---
-<Layout title="Achievements | SBHS Robotics 750">
-  <div class="container">
-    <header class="page-header">
-      <h1 class="text-glow-gold">Team Achievements</h1>
-      <div id="year-selector" class="year-selector">
-        {availableYears.map((year, index) => (
-          <a href="#" data-year={year} class:list={{ active: index === 0 }}>{year}</a>
-        ))}
+
+<Layout title="Achievements | SB Robotics">
+  <main class="container">
+    <div class="page-header">
+      <h1 class="text-gradient-gold text-glow-gold">Achievements</h1>
+      <div class="year-selector">
+        {years.map(year => {
+          const season = `${parseInt(year) - 1}-${year.slice(2)}`;
+          return <a href="#" data-year={year} class={year === firstYear ? 'active' : ''}>{season}</a>;
+        })}
       </div>
-    </header>
-
-    <div id="achievements-content">
-      {availableYears.map((year, index) => (
-        <div class:list={['year-content', { hidden: index !== 0 }]} data-content-year={year}>
-          <ul class="achievements-list">
-            {achievementsData[year].competitions.map(comp => (
-              <li>
-                <div class="achievement-item">
-                  <div>
-                    <p class="date">{comp.date}</p>
-                    <h3>{comp.name}</h3>
-                    <div class="achievement-awards">
-                      {comp.awards.map(award => (
-                        <span class="award-badge">{award}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <a href={comp.eventUrl} target="_blank" class="event-link-btn">
-                    View Event &rarr;
-                  </a>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
     </div>
-  </div>
 
-  <script is:inline>
-    // This script is identical to the roster page script for switching years.
-    const yearSelector = document.getElementById('year-selector');
-    const contentContainer = document.getElementById('achievements-content');
+    <div class="team-filter-container" style="margin-bottom: 2rem; text-align: center;">
+      <label for="team-selector" style="margin-right: 1rem; font-size: 1.125rem;">Filter by Team:</label>
+      <select id="team-selector" style="padding: 0.5rem; border-radius: 0.25rem; background-color: var(--color-gray-dark); color: var(--color-white); border: 1px solid var(--color-gray-medium);">
+        <option value="all">All Teams</option>
+        {[...allTeams].sort().map(team => <option value={team}>{team}</option>)}
+      </select>
+    </div>
 
-    yearSelector.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = e.target;
-      if (target.tagName === 'A') {
-        const year = target.dataset.year;
-        yearSelector.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-        target.classList.add('active');
-        contentContainer.querySelectorAll('.year-content').forEach(div => {
-          if (div.dataset.contentYear === year) {
-            div.classList.remove('hidden');
-          } else {
-            div.classList.add('hidden');
+    <div id="achievements-container" class="achievements-list">
+      </div>
+  </main>
+</Layout>
+
+<script define:vars={{ achievementsData, firstYear }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const achievementsContainer = document.getElementById('achievements-container');
+    const yearSelectorLinks = document.querySelectorAll('.year-selector a');
+    const teamSelector = document.getElementById('team-selector');
+
+    function displayAchievements(year, teamFilter) {
+      const yearData = achievementsData[year];
+      let html = '';
+
+      if (yearData && yearData.competitions) {
+        yearData.competitions.forEach(comp => {
+          const filteredAwards = comp.awards.filter(award => teamFilter === 'all' || award.team === teamFilter);
+
+          if (filteredAwards.length > 0) {
+            const awardsHtml = filteredAwards.map(award => `
+              <div class="award-item" style="display: flex; align-items: center; gap: 0.75rem;">
+                <span class="award-badge">${award.award}</span>
+                <span class="team-name" style="color: var(--color-gold-faded); font-weight: 600;">- ${award.team}</span>
+              </div>
+            `).join('');
+
+            html += `
+              <li class="achievement-item">
+                <div>
+                  <p class="date">${comp.date}</p>
+                  <h3>${comp.name}</h3>
+                  <div class="achievement-awards">${awardsHtml}</div>
+                </div>
+                <a href="${comp.eventUrl}" class="event-link-btn" target="_blank" rel="noopener noreferrer">Event Details</a>
+              </li>
+            `;
           }
         });
       }
+      achievementsContainer.innerHTML = html || '<p style="text-align: center;">No achievements to display for this selection.</p>';
+    }
+
+    // --- Event Listeners ---
+    yearSelectorLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        yearSelectorLinks.forEach(l => l.classList.remove('active'));
+        e.target.classList.add('active');
+        const selectedYear = e.target.dataset.year;
+        const selectedTeam = teamSelector.value;
+        displayAchievements(selectedYear, selectedTeam);
+      });
     });
-  </script>
-</Layout>
+
+    teamSelector.addEventListener('change', () => {
+      const selectedYear = document.querySelector('.year-selector a.active').dataset.year;
+      const selectedTeam = teamSelector.value;
+      displayAchievements(selectedYear, selectedTeam);
+    });
+
+    // Initial load
+    displayAchievements(firstYear, 'all');
+  });
+</script>

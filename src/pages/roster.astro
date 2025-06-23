@@ -1,73 +1,214 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import rosterData from '../data/roster.json';
+import achievementsData from '../data/achievements.json';
 
-const availableYears = Object.keys(rosterData).sort((a, b) => Number(b) - Number(a));
+const years = Object.keys(rosterData).sort((a, b) => b.localeCompare(a));
 ---
-<Layout title="Roster | SBHS Robotics 750">
-  <div class="container">
-    <header class="page-header">
-      <h1 class="text-glow-gold">Team Roster</h1>
-      <div id="year-selector" class="year-selector">
-        {availableYears.map((year, index) => (
-          <a href="#" data-year={year} class:list={{ active: index === 0 }}>{year}</a>
-        ))}
-      </div>
-    </header>
 
-    <div id="roster-content">
-    {availableYears.map((year, index) => (
-      <div class:list={["year-content", { hidden: index !== 0 }]} data-content-year={year}>
-        {Object.entries(rosterData[year]).map(([division, teams]) => (
-          <section class="division-section">
-            <h2 class="division-title text-gradient-gold">{division}</h2>
-            <div class="roster-grid">
-              {Object.entries(teams).map(([teamId, team]) => (
-                <div class="team-card">
-                  <h3>{teamId}</h3>
-                  <ul>
-                    {team.members.map(member => (
-                      <li>
-                        <div class="member-name">{member.name}</div>
-                        <div class="member-role">{member.role}</div>
-                      </li>
-                    ))}
-                  </ul>
+<Layout title="Roster | VEX Robotics">
+  <main class="container">
+    <div class="page-header">
+        <h1 class="text-gradient-gold text-glow-gold">Team Roster</h1>
+        <div class="year-selector">
+            {years.map((year, index) => {
+                const season = `${parseInt(year) - 1}-${year.slice(2)}`;
+                return <a href="#" class:list={["year-link", { active: index === 0 }]} data-target-id={year}>{season}</a>
+            })}
+        </div>
+    </div>
+
+    {years.map((year, index) => (
+        <div id={year} class:list={["year-content", { hidden: index !== 0 }]}>
+            {Object.entries(rosterData[year]).map(([division, teams]) => (
+                <div class="division-section">
+                    <h2 class="division-title">{division}</h2>
+                    <div class="roster-grid">
+                        {Object.entries(teams).map(([teamId, teamData]) => (
+                            <div class="team-card">
+                                <h3>{teamId}</h3>
+                                <ul>
+                                    {teamData.members.map(member => (
+                                        <li>
+                                            {/* We only need the member's name here to trigger the lookup */}
+                                            <span class="member-name" data-member-name={member.name} data-year={year}>
+                                                {member.name}
+                                            </span>
+                                            <div class="member-role">{member.role}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+            ))}
+        </div>
     ))}
+  </main>
+
+  <div id="member-modal-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+      <div id="modal-header">
+        <h2 id="modal-member-name"></h2>
+        <div id="modal-role-pills" class="role-pills"></div>
+      </div>
+      <div id="modal-body">
+        <h4>Personal Awards Accrued</h4>
+        <ul id="modal-awards-list"></ul>
+      </div>
     </div>
   </div>
-
-  <script>
-    const yearSelector = document.getElementById('year-selector');
-    const contentContainer = document.getElementById('roster-content');
-
-    yearSelector.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = e.target as HTMLAnchorElement;
-
-      if (target.tagName === 'A') {
-        const year = target.dataset.year;
-
-        // Update active button
-        yearSelector.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-        target.classList.add('active');
-
-        // Show/hide content
-        contentContainer.querySelectorAll('.year-content').forEach(div => {
-          const contentDiv = div as HTMLElement;
-          if (contentDiv.dataset.contentYear === year) {
-            contentDiv.classList.remove('hidden');
-          } else {
-            contentDiv.classList.add('hidden');
-          }
-        });
-      }
-    });
-  </script>
 </Layout>
+
+<style>
+  /* Styles are unchanged and included for completeness */
+  .member-name { cursor: pointer; }
+  .year-content.hidden { display: none; }
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
+  .modal-overlay.hidden { display: none; }
+  .modal-content { background-color: var(--color-gray-dark); color: var(--color-white); padding: 2rem; border-radius: 0.75rem; border: 1px solid var(--color-gray-medium); box-shadow: 0 0 30px var(--shadow-color-1); width: 90%; max-width: 500px; position: relative; }
+  #modal-header { text-align: center; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+  #modal-member-name { font-size: 2rem; color: var(--color-white); margin-bottom: 1rem; }
+  .role-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; }
+  .role-pill { background-color: #78350f50; color: var(--color-gold-faded); padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+  #modal-body h4 { text-align: center; color: var(--color-gold); margin-bottom: 1rem; font-size: 1.25rem; }
+  #modal-awards-list { list-style: none; padding: 0; }
+  #modal-awards-list li { background-color: rgba(31, 41, 55, 0.5); padding: 0.75rem 1rem; border-radius: 0.25rem; margin-bottom: 0.5rem; }
+  .modal-close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--color-gray-light); font-size: 2rem; cursor: pointer; line-height: 1; }
+  .modal-close-btn:hover { color: var(--color-white); }
+</style>
+
+<script define:vars={{ rosterData, achievementsData }}>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalOverlay = document.getElementById('member-modal-overlay');
+    const modalName = document.getElementById('modal-member-name');
+    const modalPills = document.getElementById('modal-role-pills');
+    const modalAwards = document.getElementById('modal-awards-list');
+    const closeBtn = document.getElementById('modal-close-btn');
+
+    const yearLinks = document.querySelectorAll('.year-selector .year-link');
+    const yearContents = document.querySelectorAll('.year-content');
+
+    yearLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.dataset.targetId;
+            yearLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            yearContents.forEach(content => content.classList.toggle('hidden', content.id !== targetId));
+            bindClickListeners();
+        });
+    });
+    
+    /**
+     * NEW: Finds every team and year a specific member has participated in.
+     * @param {string} memberName - The name of the member to search for.
+     * @returns {Array<Object>} - A list of objects, e.g., [{year, teamId, role}, ...].
+     */
+    function getMemberParticipationHistory(memberName) {
+        const history = [];
+        for (const [year, divisions] of Object.entries(rosterData)) {
+            for (const [division, teams] of Object.entries(divisions)) {
+                for (const [teamId, teamData] of Object.entries(teams)) {
+                    const foundMember = teamData.members.find(m => m.name === memberName);
+                    if (foundMember) {
+                        history.push({ year, teamId, role: foundMember.role });
+                    }
+                }
+            }
+        }
+        return history.sort((a,b) => b.year.localeCompare(a.year)); // Sort by most recent year
+    }
+
+    /**
+     * NEW: Calculates cumulative awards based on a member's specific participation history.
+     * @param {Array<Object>} participationHistory - The output from getMemberParticipationHistory.
+     * @param {string} endYear - The latest competition year to include.
+     * @returns {Object} - An object mapping award names to their counts.
+     */
+    function getMemberCumulativeAwards(participationHistory, endYear) {
+        const awardCounts = {};
+        for (const participation of participationHistory) {
+            if (participation.year > endYear) continue;
+
+            const yearData = achievementsData[participation.year];
+            if (yearData && yearData.competitions) {
+                for (const comp of yearData.competitions) {
+                    for (const award of comp.awards) {
+                        if (award.team === participation.teamId) {
+                            awardCounts[award.award] = (awardCounts[award.award] || 0) + 1;
+                        }
+                    }
+                }
+            }
+        }
+        return awardCounts;
+    }
+
+    function openModal(memberName, currentYear) {
+        const history = getMemberParticipationHistory(memberName);
+        if (history.length === 0) return;
+
+        modalName.textContent = memberName;
+        
+        // Populate role pills from the member's full history
+        modalPills.innerHTML = '';
+        history.forEach(p => {
+            const season = `${parseInt(p.year) - 1}-${p.year.slice(2)}`;
+            const pill = document.createElement('span');
+            pill.className = 'role-pill';
+            pill.textContent = `${season} (${p.teamId}) | ${p.role}`;
+            modalPills.appendChild(pill);
+        });
+
+        // Populate awards based on history up to the currently viewed year
+        modalAwards.innerHTML = '';
+        const cumulativeAwards = getMemberCumulativeAwards(history, currentYear);
+        const awardEntries = Object.entries(cumulativeAwards);
+
+        if (awardEntries.length > 0) {
+            awardEntries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([awardText, count]) => {
+                const li = document.createElement('li');
+                li.textContent = count > 1 ? `${count}x ${awardText}` : awardText;
+                modalAwards.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'No awards recorded during their participation.';
+            modalAwards.appendChild(li);
+        }
+        
+        modalOverlay.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        modalOverlay.classList.add('hidden');
+    }
+
+    function bindClickListeners() {
+        document.querySelectorAll('.year-content:not(.hidden) .member-name').forEach(nameSpan => {
+            nameSpan.addEventListener('click', function() {
+                const memberName = this.dataset.memberName;
+                const currentYear = this.dataset.year; // The year of the roster they are clicking on
+                openModal(memberName, currentYear);
+            });
+        });
+    }
+
+    // --- Global Event Listeners (with cloning to prevent duplicates) ---
+    const setupAndBind = () => {
+        // This cloning trick is a simple way to remove all old listeners before adding new ones.
+        document.querySelectorAll('.member-name').forEach(span => span.replaceWith(span.cloneNode(true)));
+        bindClickListeners();
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => (e.target === modalOverlay) && closeModal());
+    document.addEventListener('keydown', (e) => (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) && closeModal());
+    
+    // Initial binding
+    bindClickListeners();
+});
+</script>
