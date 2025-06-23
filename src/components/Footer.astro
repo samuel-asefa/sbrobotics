@@ -18,7 +18,7 @@ const orgLinks = [
       <div>
         <h3>Useful Links</h3>
         <ul>
-          {usefulLinks.map(link => <li><a href={link.href} target="_blank">{link.name}</a></li>)}
+          {usefulLinks.map(link => <li><a href={link.href} target="_blank" rel="noopener noreferrer">{link.name}</a></li>)}
         </ul>
       </div>
       <div>
@@ -30,6 +30,9 @@ const orgLinks = [
     </div>
     <div class="footer-bottom">
       <p>&copy; {new Date().getFullYear()} South Brunswick Robotics. All Rights Reserved.</p>
+      <p style="margin-top: 0.25rem;">
+        Website by <a href="https://samuel-asefa.github.io" target="_blank" rel="noopener noreferrer" style="color: var(--color-gold); text-decoration: underline;">Sammy</a>
+      </p>
     </div>
   </div>
 </footer>
