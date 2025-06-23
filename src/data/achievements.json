@@ -2,45 +2,45 @@
     "2025": {
       "competitions": [
         {
-          "date": "03/10/25",
+          "date": "03/15/25",
           "name": "VEX V5 High Stakes NJ State Championship - High School Level",
           "awards": [
-            { "award": "Tournament Finalists", "team": "750S" },
-            { "award": "Think Award", "team": "750S" },
+            { "award": "Tournament Finalists", "team": "750B" },
+            { "award": "Think Award", "team": "750B" },
             { "award": "Sportsmanship Award", "team": "750C" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/RE-V5RC-24-9258.html"
         },
         {
-          "date": "02/01/25",
+          "date": "02/22/25",
           "name": "Franklin High School - High Stakes at the Coliseum",
           "awards": [
             { "award": "Excellence Award", "team": "750B" },
             { "award": "Tournament Champions", "team": "750B" },
             { "award": "Robot Skills Champion", "team": "750B" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-8565.html#general-info"
         },
         {
-          "date": "01/10/25",
+          "date": "02/15/25",
           "name": "SBHS Robotics V5RC High Stakes",
           "awards": [
             { "award": "Excellence Award", "team": "750B" },
             { "award": "Robot Skills Champion", "team": "750B" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-7128.html#general-info"
         },
         {
-          "date": "12/05/24",
+          "date": "02/01/25",
           "name": "Colts Neck High School High Stakes",
           "awards": [
             { "award": "Tournament Champions", "team": "750B" },
             { "award": "Robot Skills Champion", "team": "750B" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-6777.html#general-info"
         },
         {
-          "date": "11/15/24",
+          "date": "01/25/25",
           "name": "CCHS High Stakes Tournament",
           "awards": [
             { "award": "Tournament Champions", "team": "750S" },
@@ -48,46 +48,46 @@
             { "award": "Design Award", "team": "750R" },
             { "award": "Excellence Award", "team": "750W" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-6413.html#general-info"
         }
       ]
     },
     "2024": {
       "competitions": [
         {
-          "date": "01/15/24",
+          "date": "02/18/24",
           "name": "VRC Over Under Encounter",
           "awards": [
             { "award": "Innovate Award", "team": "750R" }
           ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-4000.html#general-info"
         },
         {
-          "date": "12/15/23",
+            "date": "02/03/24",
+            "name": "SBHS Robotics VRC Over Under Competition 2023-2024",
+            "awards": [
+              { "award": "Tournament Champions", "team": "750B" },
+              { "award": "Tournament Champions", "team": "750C" },
+              { "award": "Design Award", "team": "750R" },
+              { "award": "Amaze Award", "team": "750W" }
+            ],
+            "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-1852.html#general-info"
+          },
+          {
+            "date": "01/27/24",
+            "name": "Camden Catholic High School VRC Over Under Tournament",
+            "awards": [
+              { "award": "Tournament Champion", "team": "750B" }
+            ],
+            "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-3162.html#awards"
+          },
+        {
+          "date": "01/13/24",
           "name": "VRC Over Under Sparta Blitz",
           "awards": [
             { "award": "Design Award", "team": "750R" }
           ],
-          "eventUrl": "#"
-        },
-        {
-          "date": "11/18/23",
-          "name": "SBHS Robotics VRC Over Under Competition 2023-2024",
-          "awards": [
-            { "award": "Tournament Champions", "team": "750B" },
-            { "award": "Tournament Champions", "team": "750C" },
-            { "award": "Design Award", "team": "750R" },
-            { "award": "Amaze Award", "team": "750W" }
-          ],
-          "eventUrl": "#"
-        },
-        {
-          "date": "10/20/23",
-          "name": "Camden Catholic High School VRC Over Under Tournament",
-          "awards": [
-            { "award": "Tournament Champions", "team": "750B" }
-          ],
-          "eventUrl": "#"
+          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-3162.html#awards"
         }
       ]
     }
