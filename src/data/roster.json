@@ -1,115 +1,115 @@
 {
-    "2025": {
-      "High School": {
-        "750S": {
-          "members": [
-            { "name": "Zahin Chowdhury", "role": "Captain" },
-            { "name": "Sanskaar Srivastava", "role": "Vice-Captain" },
-            { "name": "Nick", "role": "Member" },
-            { "name": "Rohan Kumar", "role": "Member" },
-            { "name": "Rohan Kunala", "role": "Member" },
-            { "name": "Suhita", "role": "Member" },
-            { "name": "Suha", "role": "Member" },
-            { "name": "Irenov", "role": "Member" },
-            { "name": "Nitish", "role": "Member" },
-            { "name": "Vidur", "role": "Member" },
-            { "name": "Devesh", "role": "Member" }
-          ]
-        },
-        "750B": {
-          "members": [
-            { "name": "Aditya Prabhu", "role": "Vice-President" },
-            { "name": "Mayank Deoras", "role": "Captain" },
-            { "name": "Aayush Chebolu", "role": "Vice-Captain" },
-            { "name": "Karthik", "role": "Member" },
-            { "name": "Momo", "role": "Member" },
-            { "name": "Aarush", "role": "Member" },
-            { "name": "Praj", "role": "Member" },
-            { "name": "Dhruv", "role": "Member" },
-            { "name": "Pranav", "role": "Member" },
-            { "name": "Advait", "role": "Member" },
-            { "name": "Ishaan", "role": "Member" }
-          ]
-        },
-        "750C": {
-          "members": [
-            { "name": "Shaunak Bhangale", "role": "President" },
-            { "name": "Ganeshan Venu", "role": "Captain" },
-            { "name": "Neil Deshpande", "role": "Vice-Captain" },
-            { "name": "Milan", "role": "Member" },
-            { "name": "Sanjit", "role": "Member" },
-            { "name": "Pranav", "role": "Member" },
-            { "name": "Arjun", "role": "Member" },
-            { "name": "Bhavya", "role": "Member" },
-            { "name": "Eeshan", "role": "Member" },
-            { "name": "Varun", "role": "Member" },
-            { "name": "Arnav", "role": "Member" }
-          ]
-        },
-        "750R": {
-          "members": [
-            { "name": "Anika Thakur", "role": "President" },
-            { "name": "Rakshna Ravishankar", "role": "Captain" },
-            { "name": "Yegna Bodepudi", "role": "Vice-Captain" },
-            { "name": "Arjun Gilhotra", "role": "Vice-Captain" },
-            { "name": "Vihaan", "role": "Member" },
-            { "name": "Aarya", "role": "Member" },
-            { "name": "Hari", "role": "Member" },
-            { "name": "Nick", "role": "Member" },
-            { "name": "Anushree", "role": "Member" },
-            { "name": "Sahil", "role": "Member" },
-            { "name": "Shrish", "role": "Member" }
-          ]
-        },
-        "750E": {
-          "members": [
-            { "name": "Vivaan Shah", "role": "Captain" },
-            { "name": "Zain Mansuri", "role": "Vice-Captain" },
-            { "name": "Sreeram", "role": "Member" },
-            { "name": "Daksh", "role": "Member" },
-            { "name": "Zafir", "role": "Member" },
-            { "name": "Blossom", "role": "Member" },
-            { "name": "Abhiram", "role": "Member" },
-            { "name": "Heera", "role": "Member" },
-            { "name": "Vivek", "role": "Member" },
-            { "name": "Shubh", "role": "Member" },
-            { "name": "Omar", "role": "Member" },
-            { "name": "Aamani", "role": "Member" }
-          ]
-        },
-        "750W": {
-          "members": [
-            { "name": "Arav Pyati", "role": "Captain" },
-            { "name": "Ajay Avasi", "role": "Vice-Captain" },
-            { "name": "Aishi Chell", "role": "Vice-Captain" },
-            { "name": "Adish", "role": "Member" },
-            { "name": "Aiden", "role": "Member" },
-            { "name": "Sammy", "role": "Member" },
-            { "name": "Samyuktha", "role": "Member" },
-            { "name": "Piya", "role": "Member" },
-            { "name": "Rahi", "role": "Member" },
-            { "name": "Prisha", "role": "Member" },
-            { "name": "Daksh", "role": "Member" },
-            { "name": "Ram", "role": "Member" }
-          ]
-        }
+  "2025": {
+    "High School": {
+      "750S": {
+        "members": [
+          { "name": "Zahin Chowdhury", "role": "Captain" },
+          { "name": "Sanskaar Srivastava", "role": "Vice-Captain" },
+          { "name": "Nicholas Trigoubovich", "role": "Member" },
+          { "name": "Rohan Kumar", "role": "Member" },
+          { "name": "Rohan Kunala", "role": "Member" },
+          { "name": "Suhita Allareddy", "role": "Member" },
+          { "name": "Suha Mallepeddi", "role": "Member" },
+          { "name": "Irenov Joel", "role": "Member" },
+          { "name": "Nitish Pendyala", "role": "Member" },
+          { "name": "Vidur Jain", "role": "Member" },
+          { "name": "Devesh Bodepudi", "role": "Member" }
+        ]
+      },
+      "750B": {
+        "members": [
+          { "name": "Aditya Prabhu", "role": "Vice-President" },
+          { "name": "Mayank Deoras", "role": "Captain" },
+          { "name": "Aayush Chebolu", "role": "Vice-Captain" },
+          { "name": "Karthik Thallam", "role": "Member" },
+          { "name": "Mohammad Sadiq", "role": "Member" },
+          { "name": "Aarush Sinha", "role": "Member" },
+          { "name": "Praj Amin", "role": "Member" },
+          { "name": "Dhruv Maini", "role": "Member" },
+          { "name": "Pranav Halaharvi Virupaksha", "role": "Member" },
+          { "name": "Advait Ghantasala", "role": "Member" },
+          { "name": "Ishaan Wadhwani", "role": "Member" }
+        ]
+      },
+      "750C": {
+        "members": [
+          { "name": "Shaunak Bhangale", "role": "President" },
+          { "name": "Ganeshan Venu", "role": "Captain" },
+          { "name": "Neil Deshpande", "role": "Vice-Captain" },
+          { "name": "Milan Mendu", "role": "Member" },
+          { "name": "Sanjit Aita", "role": "Member" },
+          { "name": "Pranavkirthik Vijayakumaar", "role": "Member" },
+          { "name": "Arjun Tyagi", "role": "Member" },
+          { "name": "Bhavya Darji", "role": "Member" },
+          { "name": "Eshaan Revankar", "role": "Member" },
+          { "name": "Varun Chirravuri", "role": "Member" },
+          { "name": "Arnav Rastogi", "role": "Member" }
+        ]
+      },
+      "750R": {
+        "members": [
+          { "name": "Anika Thakur", "role": "President" },
+          { "name": "Rakshna Ravishankar", "role": "Captain" },
+          { "name": "Yegna Bodepudi", "role": "Vice-Captain" },
+          { "name": "Arjun Gilhotra", "role": "Vice-Captain" },
+          { "name": "Vihaan Pardeshi", "role": "Member" },
+          { "name": "Aarya Dalvi", "role": "Member" },
+          { "name": "Haripranav Yandrapu", "role": "Member" },
+          { "name": "Nicholas Keller", "role": "Member" },
+          { "name": "Anushree Chidambaram", "role": "Member" },
+          { "name": "Sahil Narsinghani", "role": "Member" },
+          { "name": "Shrish Karthikeyan", "role": "Member" }
+        ]
+      },
+      "750E": {
+        "members": [
+          { "name": "Vivaan Shah", "role": "Captain" },
+          { "name": "Zain Mansuri", "role": "Vice-Captain" },
+          { "name": "Sreeram Vuppala", "role": "Member" },
+          { "name": "Daksh Patel", "role": "Member" },
+          { "name": "Zafir Shamsi", "role": "Member" },
+          { "name": "Blossom Patel", "role": "Member" },
+          { "name": "Abhiram Reddy Kandadi", "role": "Member" },
+          { "name": "Heera Chinthapatla", "role": "Member" },
+          { "name": "Vivek Banker", "role": "Member" },
+          { "name": "Shubh Kulkarni", "role": "Member" },
+          { "name": "Omar Palislamovic", "role": "Member" },
+          { "name": "Aamani Yelishetti", "role": "Member" }
+        ]
+      },
+      "750W": {
+        "members": [
+          { "name": "Arav Pyati", "role": "Captain" },
+          { "name": "Ajay Avasi", "role": "Vice-Captain" },
+          { "name": "Aishi Chell", "role": "Vice-Captain" },
+          { "name": "Adish Rout", "role": "Member" },
+          { "name": "Aiden Cheng", "role": "Member" },
+          { "name": "Sammy Asefa", "role": "Member" },
+          { "name": "Samyuktha Raja", "role": "Member" },
+          { "name": "Piya Sadana", "role": "Member" },
+          { "name": "Rahi Thaker", "role": "Member" },
+          { "name": "Prisha Inamdar", "role": "Member" },
+          { "name": "Daksh Gupta", "role": "Member" },
+          { "name": "Ram Viswanathan", "role": "Member" }
+        ]
       }
-    },
+    }
+  },
     "2024": {
       "High School": {
         "750S": {
           "members": [
             { "name": "Zahin Chowdhury", "role": "Member" },
             { "name": "Sanskaar Srivastava", "role": "Member" },
-            { "name": "Nick", "role": "Member" },
+            { "name": "Nicholas Trigoubovich", "role": "Member" },
             { "name": "Rohan Kumar", "role": "Member" },
             { "name": "Rohan Kunala", "role": "Member" },
-            { "name": "Suhita", "role": "Member" },
-            { "name": "Suha", "role": "Member" },
-            { "name": "Irenov", "role": "Member" },
-            { "name": "Nitish", "role": "Member" },
-            { "name": "Vidur", "role": "Member" },
-            { "name": "Devesh", "role": "Member" }
+            { "name": "Suhita Allareddy", "role": "Member" },
+            { "name": "Suha Mallepeddi", "role": "Member" },
+            { "name": "Irenov Joel", "role": "Member" },
+            { "name": "Nitish Pendyala", "role": "Member" },
+            { "name": "Vidur Jain", "role": "Member" },
+            { "name": "Devesh Bodepudi", "role": "Member" }
           ]
         },
         "750B": {
@@ -117,14 +117,14 @@
             { "name": "Aditya Prabhu", "role": "Vice-Captain" },
             { "name": "Mayank Deoras", "role": "Member" },
             { "name": "Aayush Chebolu", "role": "Member" },
-            { "name": "Karthik", "role": "Member" },
-            { "name": "Momo", "role": "Member" },
-            { "name": "Aarush", "role": "Member" },
-            { "name": "Praj", "role": "Member" },
-            { "name": "Dhruv", "role": "Member" },
-            { "name": "Pranav", "role": "Member" },
-            { "name": "Advait", "role": "Member" },
-            { "name": "Ishaan", "role": "Member" }
+            { "name": "Karthik Thallam", "role": "Member" },
+            { "name": "Mohammad Sadiq", "role": "Member" },
+            { "name": "Aarush Sinha", "role": "Member" },
+            { "name": "Praj Amin", "role": "Member" },
+            { "name": "Dhruv Maini", "role": "Member" },
+            { "name": "Pranav Halaharvi Virupaksha", "role": "Member" },
+            { "name": "Advait Ghantasala", "role": "Member" },
+            { "name": "Ishaan Wadhwani", "role": "Member" }
           ]
         },
         "750C": {
@@ -132,12 +132,12 @@
             { "name": "Shaunak Bhangale", "role": "Vice-Captain" },
             { "name": "Ganeshan Venu", "role": "Member" },
             { "name": "Neil Deshpande", "role": "Member" },
-            { "name": "Milan", "role": "Member" },
-            { "name": "Sanjit", "role": "Member" },
-            { "name": "Pranav", "role": "Member" },
-            { "name": "Arjun", "role": "Member" },
-            { "name": "Bhavya", "role": "Member" },
-            { "name": "Eeshan", "role": "Member" }
+            { "name": "Milan Mendu", "role": "Member" },
+            { "name": "Sanjit Aita", "role": "Member" },
+            { "name": "Pranavkirthik Vijayakumaar", "role": "Member" },
+            { "name": "Arjun Tyagi", "role": "Member" },
+            { "name": "Bhavya Darji", "role": "Member" },
+            { "name": "Eshaan Revankar", "role": "Member" }
           ]
         },
         "750R": {
@@ -146,27 +146,27 @@
             { "name": "Rakshna Ravishankar", "role": "Member" },
             { "name": "Yegna Bodepudi", "role": "Member" },
             { "name": "Arjun Gilhotra", "role": "Member" },
-            { "name": "Vihaan", "role": "Member" },
-            { "name": "Aarya", "role": "Member" },
-            { "name": "Hari", "role": "Member" },
-            { "name": "Nick", "role": "Member" },
-            { "name": "Anushree", "role": "Member" },
-            { "name": "Sahil", "role": "Member" },
-            { "name": "Shrish", "role": "Member" }
+            { "name": "Vihaan Pardeshi", "role": "Member" },
+            { "name": "Aarya Dalvi", "role": "Member" },
+            { "name": "Haripranav Yandrapu", "role": "Member" },
+            { "name": "Nicholas Keller", "role": "Member" },
+            { "name": "Anushree Chidambaram", "role": "Member" },
+            { "name": "Sahil Narsinghani", "role": "Member" },
+            { "name": "Shrish Karthikeyan", "role": "Member" }
           ]
         },
         "750E": {
           "members": [
             { "name": "Vivaan Shah", "role": "Vice-Captain" },
             { "name": "Zain Mansuri", "role": "Member" },
-            { "name": "Sreeram", "role": "Member" },
-            { "name": "Daksh", "role": "Member" },
-            { "name": "Zafir", "role": "Member" },
-            { "name": "Blossom", "role": "Member" },
-            { "name": "Abhiram", "role": "Member" },
-            { "name": "Heera", "role": "Member" },
-            { "name": "Vivek", "role": "Member" },
-            { "name": "Shubh", "role": "Member" }
+            { "name": "Sreeram Vuppala", "role": "Member" },
+            { "name": "Daksh Patel", "role": "Member" },
+            { "name": "Zafir Shamsi", "role": "Member" },
+            { "name": "Blossom Patel", "role": "Member" },
+            { "name": "Abhiram Reddy Kandadi", "role": "Member" },
+            { "name": "Heera Chinthapatla", "role": "Member" },
+            { "name": "Vivek Banker", "role": "Member" },
+            { "name": "Shubh Kulkarni", "role": "Member" }
           ]
         },
         "750W": {
@@ -176,13 +176,13 @@
             { "name": "Arav Pyati", "role": "Vice-Captain" },
             { "name": "Ajay Avasi", "role": "Member" },
             { "name": "Aishi Chell", "role": "Member" },
-            { "name": "Adish", "role": "Member" },
-            { "name": "Aiden", "role": "Member" },
-            { "name": "Sammy", "role": "Member" },
-            { "name": "Samyuktha", "role": "Member" },
-            { "name": "Rahi", "role": "Member" },
-            { "name": "Prisha", "role": "Member" },
-            { "name": "Daksh", "role": "Member" }
+            { "name": "Adish Rout", "role": "Member" },
+            { "name": "Aiden Cheng", "role": "Member" },
+            { "name": "Sammy Asefa", "role": "Member" },
+            { "name": "Samyuktha Raja", "role": "Member" },
+            { "name": "Rahi Thaker", "role": "Member" },
+            { "name": "Prisha Inamdar", "role": "Member" },
+            { "name": "Daksh Gupta", "role": "Member" }
           ]
         }
       }
