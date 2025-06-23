@@ -1,0 +1,49 @@
+---
+// src/components/Header.astro
+---
+<nav class="navbar">
+    <div class="container navbar-content">
+        <a href="/" class="navbar-brand">SBHS Robotics</a>
+        
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/roster">Roster</a>
+            <a href="/achievements">Awards</a>
+            <a href="/competition">Our Competition</a>
+            <a href="/outreach">Outreach</a>
+            <a href="/contact">Contact</a>            
+        </div>
+
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span class="hamburger-icon"></span>
+        </button>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu">
+        <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/roster">Roster</a>
+            <a href="/achievements">Awards</a>
+            <a href="/competition">Our Competition</a>
+            <a href="/outreach">Outreach</a>
+            <a href="/contact">Contact</a>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuToggle && mobileMenu) {
+            mobileMenuToggle.addEventListener('click', () => {
+                // Toggle the 'open' class on the menu and the button
+                const isOpened = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
+                mobileMenuToggle.setAttribute('aria-expanded', !isOpened);
+                mobileMenu.classList.toggle('open');
+                mobileMenuToggle.classList.toggle('open');
+            });
+        }
+    });
+</script>
