@@ -86,7 +86,7 @@ Seasons are keyed by the year the season **ends** (`"2026"` = the 2025–26 seas
 
 The newest full roster becomes the default on `/roster` and on the homepage teams section automatically. Older seasons stay available as an archive.
 
-Rosters were last imported from `SB-Robotics-Rosters-2023-2027.xlsx` (Roster Data sheet). Only named people with a roster or leadership source were imported. Unnamed slots and event-volunteer-only names were left out, and two spellings were normalized ("Sammy Asefa" → "Samuel Asefa", "Pranavkirthik Vijayakumaar" → "Pranavkirthik Vijayakumar").
+Rosters were last imported from `SB-Robotics-Rosters-2023-2027.xlsx` (Roster Data sheet). Only named people with a roster or leadership source were imported. Unnamed slots and event-volunteer-only names were left out, and two spellings were normalized ("Sammy Asefa" → "Samuel Asefa", "Pranavkirthik Vijayakumaar" → "Pranavkirthik Vijayakumar"). The workbook also listed Aarush Sinha on 750S for 2026–27; the team confirmed he is only on 750B (Vice-Captain).
 
 ### Awards
 
@@ -164,7 +164,6 @@ The founding year (2012) comes from the previous About page.
 ## Still needed
 
 - 2026–27 roster questions from the roster workbook:
-  - Aarush Sinha is listed on both 750S (Notebook Workshop Lead) and 750B (Vice-Captain). Both entries are shown as in the source; confirm whether this is one person or two.
   - One 750S member slot and one 750R member slot have no name, so they are not shown.
   - Anushree Chidambaram's role is marked unconfirmed ("VLA Representative?"), so the site shows her as a Member for now.
 - 2025–26: full team lists (only leadership was announced), the 750B captain, and the rest of the award results.
