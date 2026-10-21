@@ -1,0 +1,325 @@
+---
+// A season told event by event. Horizontal, natively scrollable track on
+// wide screens (with buttons + progress); a vertical list on phones.
+import AwardIcon from './AwardIcon.astro';
+import TeamId from './TeamId.astro';
+import Icon from './Icon.astro';
+import { allEvents, awardKind, formatDate, formatRange, pad2, seasonLabel, seasonGame, seasonMeta } from '../lib/data';
+import { eventUrl } from '../data/site';
+
+interface Props { season: string; id?: string }
+const { season, id = 'season-timeline' } = Astro.props;
+
+type Stop = {
+  date: string;
+  dateLabel: string;
+  name: string;
+  location: string;
+  url: string;
+  hosted?: boolean;
+  awards: { award: string; team: string }[];
+  milestone?: { teams: string[]; summary: string };
+};
+
+const events: Stop[] = allEvents()
+  .filter((e) => e.season === season)
+  .map((e) => ({ date: e.date, dateLabel: formatDate(e.date), name: e.name, location: e.location, url: e.url, hosted: e.hosted, awards: e.awards }));
+const milestones: Stop[] = (seasonMeta(season)?.milestones ?? []).map((m) => ({
+  date: m.date,
+  dateLabel: formatRange(m.date, m.endDate),
+  name: m.name,
+  location: m.location,
+  url: eventUrl(m.eventCode),
+  awards: [],
+  milestone: { teams: m.teams, summary: m.summary },
+}));
+const stops = [...events, ...milestones].sort((a, b) => a.date.localeCompare(b.date));
+const label = `${seasonLabel(season)} ${seasonGame(season)}`;
+---
+<div class="tl" data-timeline id={id}>
+  <div class="tl__controls" data-reveal="fade">
+    <p class="label"><span class="gold" data-tl-current>01</span> / {pad2(stops.length)}</p>
+    <div class="tl__btns">
+      <button type="button" class="tl__btn" data-tl-prev aria-label="Previous event" aria-controls={`${id}-track`}>
+        <Icon name="arrow-left" size={20} />
+      </button>
+      <button type="button" class="tl__btn" data-tl-next aria-label="Next event" aria-controls={`${id}-track`}>
+        <Icon name="arrow-right" size={20} />
+      </button>
+    </div>
+  </div>
+
+  <div class="tl__viewport" id={`${id}-track`} tabindex="0" role="region" aria-label={`${label} season timeline. Scroll sideways for more events.`} data-tl-viewport>
+    <ol class="tl__track">
+      {stops.map((s, i) => (
+        <li class:list={['tl__stop', s.milestone && 'tl__stop--milestone']} data-reveal style={`--d:${Math.min(i, 4)}`}>
+          <span class="tl__node" aria-hidden="true"></span>
+          <article class="tl__card">
+            <header class="tl__head">
+              <span class="tl__n display display--italic" aria-hidden="true">{pad2(i + 1)}</span>
+              <time class="label label--gold" datetime={s.date}>{s.dateLabel}</time>
+            </header>
+            <h3 class="tl__name">{s.name}</h3>
+            <p class="tl__loc label label--sm">{s.location}</p>
+            {s.hosted && <p class="chip chip--gold tl__hosted">Hosted by SB Robotics</p>}
+
+            {s.awards.length > 0 && (
+              <ul class="tl__awards" aria-label="SB Robotics awards at this event">
+                {s.awards.map((a) => (
+                  <li>
+                    <AwardIcon kind={awardKind(a.award)} size={22} class="tl__icon" />
+                    <span class="tl__award">{a.award}</span>
+                    <TeamId id={a.team} class="tl__team" />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {s.milestone && (
+              <div class="tl__milestone">
+                <p class="tl__teams">{s.milestone.teams.map((t) => <TeamId id={t} />)}</p>
+                <p>{s.milestone.summary}</p>
+              </div>
+            )}
+
+            <a class="tl__link" href={s.url} target="_blank" rel="noopener noreferrer">
+              Official event page
+              <Icon name="arrow-up-right" size={14} />
+              <span class="sr-only-sb">for {s.name} (opens in a new tab)</span>
+            </a>
+          </article>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <div class="tl__progress" aria-hidden="true"><span data-tl-progress></span></div>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-timeline]').forEach((root) => {
+    const vp = root.querySelector<HTMLElement>('[data-tl-viewport]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-tl-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-tl-next]');
+    const bar = root.querySelector<HTMLElement>('[data-tl-progress]');
+    const current = root.querySelector<HTMLElement>('[data-tl-current]');
+    if (!vp) return;
+    const stops = [...vp.querySelectorAll<HTMLElement>('.tl__stop')];
+
+    const offsetOf = (i: number) => stops[i].offsetLeft - stops[0].offsetLeft;
+    const indexAt = (x: number) => {
+      let best = 0;
+      stops.forEach((_, i) => {
+        if (Math.abs(offsetOf(i) - x) < Math.abs(offsetOf(best) - x)) best = i;
+      });
+      return best;
+    };
+    // `target` lets quick repeated clicks keep advancing while a smooth scroll is still running.
+    let target: number | null = null;
+    let settle = 0;
+    const go = (dir: number) => {
+      const max = vp.scrollWidth - vp.clientWidth;
+      const from = target ?? indexAt(vp.scrollLeft);
+      let to = Math.max(0, Math.min(stops.length - 1, from + dir));
+      while (dir > 0 && to < stops.length - 1 && offsetOf(to) <= vp.scrollLeft + 2 && offsetOf(to) < max) to++;
+      target = to;
+      vp.scrollTo({ left: Math.min(offsetOf(to), max), behavior: reduce ? 'auto' : 'smooth' });
+    };
+    prev?.addEventListener('click', () => go(-1));
+    next?.addEventListener('click', () => go(1));
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const max = vp.scrollWidth - vp.clientWidth;
+      const horizontal = max > 2;
+      root.classList.toggle('is-scrollable', horizontal);
+      const p = horizontal ? vp.scrollLeft / max : 0;
+      if (bar) bar.style.transform = `scaleX(${Math.max(0.04, horizontal ? p : 1)})`;
+      if (prev) prev.disabled = !horizontal || vp.scrollLeft <= 2;
+      if (next) next.disabled = !horizontal || vp.scrollLeft >= max - 2;
+      if (current && horizontal) {
+        const idx = vp.scrollLeft >= max - 2 ? stops.length - 1 : indexAt(vp.scrollLeft);
+        current.textContent = String(idx + 1).padStart(2, '0');
+      }
+    };
+    const onScroll = () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => (target = null), 180);
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    vp.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  });
+</script>
+
+<style>
+  .tl { position: relative; }
+
+  .tl__controls {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .tl.is-scrollable .tl__controls { display: flex; }
+  .tl__btns { display: flex; gap: 0.5rem; }
+  .tl__btn {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-paper);
+    cursor: pointer;
+    transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast), opacity var(--dur-fast);
+  }
+  .tl__btn:hover:not(:disabled), .tl__btn:focus-visible { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  .tl__btn:disabled { opacity: 0.3; cursor: default; }
+
+  .tl__viewport { outline-offset: 6px; }
+  .tl__track { list-style: none; margin: 0; padding: 0; position: relative; }
+
+  /* Phone: vertical journey */
+  .tl__track::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: linear-gradient(var(--color-gold), var(--color-line-strong));
+  }
+  .tl__stop { position: relative; padding-left: 2.25rem; padding-bottom: 1.25rem; }
+  .tl__node {
+    position: absolute;
+    left: 0;
+    top: 1.6rem;
+    width: 15px;
+    height: 15px;
+    border: 1px solid var(--color-gold);
+    background: var(--color-ink);
+    transform: rotate(45deg) scale(0.75);
+  }
+  .tl__stop--milestone .tl__node { background: var(--color-gold); }
+
+  .tl__card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.4rem 1.4rem 1.2rem;
+    background: var(--color-coal);
+    border: 1px solid var(--color-line);
+    transition: border-color var(--dur) ease, transform var(--dur) var(--ease-out-expo);
+  }
+  .tl__card:hover { border-color: rgb(255 188 0 / 0.4); }
+  .tl__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .tl__n { font-size: 3.25rem; line-height: 0.8; color: var(--color-steel); }
+  @supports (-webkit-text-stroke: 1px black) {
+    .tl__n { color: transparent; -webkit-text-stroke: 1px var(--color-dim); }
+  }
+  .tl__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.45rem, 2vw, 1.8rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+  .tl__loc { color: var(--color-dim); }
+  .tl__hosted { align-self: flex-start; margin-top: 0.25rem; }
+
+  .tl__awards { list-style: none; margin: 0.6rem 0 0; padding: 0; border-top: 1px solid var(--color-line); }
+  .tl__awards li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .tl__awards :global(.tl__icon) { color: var(--color-gold); }
+  .tl__award { font-size: 0.975rem; line-height: 1.3; }
+  .tl__awards :global(.tl__team) { font-size: 1.35rem; }
+
+  .tl__milestone { margin-top: 0.5rem; display: grid; gap: 0.75rem; color: var(--color-ink); }
+  .tl__milestone p:last-child { font-size: 0.975rem; line-height: 1.5; }
+  .tl__teams :global(.team-id) { font-size: 3.5rem; }
+  .tl__stop--milestone .tl__card { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  .tl__stop--milestone .tl__name { font-size: clamp(1.7rem, 2.4vw, 2.2rem); }
+  .tl__stop--milestone .label, .tl__stop--milestone .tl__loc { color: var(--color-ink); }
+  .tl__stop--milestone .tl__n { color: transparent; -webkit-text-stroke-color: rgb(10 10 11 / 0.55); }
+  .tl__stop--milestone :global(.team-id b) { color: var(--color-ink); }
+  .tl__stop--milestone .tl__link { color: var(--color-ink); border-top-color: rgb(10 10 11 / 0.2); }
+
+  .tl__link {
+    margin-top: auto;
+    padding-top: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    transition: color var(--dur-fast);
+  }
+  .tl__link:hover, .tl__link:focus-visible { color: var(--color-gold); }
+  .tl__stop--milestone .tl__link:hover { color: var(--color-ink); text-decoration: underline; }
+
+  .tl__progress { display: none; }
+
+  /* Wide screens: horizontal journey */
+  @media (min-width: 768px) {
+    .tl__viewport {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      scroll-padding-inline: var(--gutter);
+    }
+    .tl__viewport::-webkit-scrollbar { display: none; }
+    .tl__track { display: flex; width: max-content; padding-top: 2.25rem; }
+    .tl__track::before {
+      left: 0;
+      right: 0;
+      top: 0.45rem;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+      background: linear-gradient(90deg, var(--color-gold), var(--color-line-strong));
+    }
+    .tl__stop {
+      width: clamp(300px, 27vw, 380px);
+      padding: 0 1rem 0 0;
+      scroll-snap-align: start;
+    }
+    .tl__node { top: -2.25rem; left: 0; }
+    .tl__stop--milestone { width: clamp(320px, 30vw, 420px); }
+    .tl__progress {
+      display: block;
+      margin-top: 1.75rem;
+      height: 2px;
+      background: var(--color-line);
+    }
+    .tl__progress span {
+      display: block;
+      height: 100%;
+      background: var(--color-gold);
+      transform-origin: left;
+      transform: scaleX(0.04);
+      transition: transform 120ms linear;
+    }
+  }
+</style>

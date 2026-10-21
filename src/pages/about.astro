@@ -1,24 +1,245 @@
 ---
 import Layout from '../layouts/Layout.astro';
----
-<Layout title="About Us | SBHS Robotics">
-    <div class="container">
-        <header class="page-header">
-            <h1 class="text-glow-gold">About South Brunswick Robotics</h1>
-        </header>
-        <div class="about-grid">
-            <div>
-                <h2 class="text-gradient-gold">Club Info</h2>
-                <p>While building a robot may sound very much like it may only be for individuals with specific technical abilities, the truth is that the real success stories come from highly motivated teams with varying talents. This is a very rigorous program that requires tremendous dedication and several thousands of hours outside of school including weekends, breaks, and days off.
-                  <br>
-                  <br>
-                  The VEX Robotics Competition tasks teams of students with designing and building a robot to play against other teams from around the world in a game-based engineering challenge. Classroom STEM concepts are put to the test on the playing field as students learn lifelong skills in teamwork, leadership, communication, and more. Tournaments are held year-round at the regional, state, and national levels; local champions go on to compete against the best in the world at the VEX Robotics World Championship each May!
-                </p>
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import TeamId from '../components/TeamId.astro';
+import Icon from '../components/Icon.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
+import { site, mailto, eventUrl } from '../data/site';
+import { latestRosterSeason, memberCount, officers, pad2, seasonLabel, teamsForSeason } from '../lib/data';
 
-                <h2 class="text-gradient-gold" style="margin-top: 2rem;">Our History</h2>
-                <p>Founded in 2012, South Brunswick Robotics has grown from a small club into a competitive robotics organization within New Jersey. We participate in the VEX Robotics Competition, reaching state and world championship levels through dedication and innovative design.</p>
-            </div>
-            <img src="/sbcomp.jpeg" alt="SBHS Competition" style="border-radius: 0.5rem;"/>
-        </div>
+const season = latestRosterSeason;
+const teams = teamsForSeason(season);
+const clubOfficers = officers(season);
+
+const vex = [
+  { title: 'A new game each season', text: 'Every year VEX Robotics and the REC Foundation release a new game. Teams design and build a robot from the VEX V5 system to play it, so every season starts from scratch.' },
+  { title: 'Two-on-two matches', text: 'Matches pit two alliances of two teams against each other. Each match opens with a 15-second autonomous period, when robots run only on their code, followed by 1 minute 45 seconds of driver control.' },
+  { title: 'Robot skills', text: 'In the Robot Skills Challenge one robot works alone, with one-minute driver and autonomous runs, to post the highest combined score.' },
+  { title: 'Judged awards', text: 'Judges read each team’s engineering notebook and interview the students. Awards like Excellence, Design, Innovate, and Think recognize the engineering behind the robot, not just match wins.' },
+  { title: 'The path forward', text: 'Results at local tournaments qualify teams for the New Jersey state championship, and strong state results can earn a place at the VEX Robotics World Championship.' },
+];
+
+const history = [
+  { when: '2012', title: 'South Brunswick Robotics is founded', text: 'The program begins competing in the VEX Robotics Competition.' },
+  {
+    when: 'Feb 2013',
+    title: '750C wins Excellence at the state championship',
+    text: 'Team 750C won the Excellence Award at the New Jersey state championship and qualified for the 2013 World Championship in Anaheim, California.',
+    source: { label: 'The Sun (Cherry Hill), Feb 27, 2013', href: 'https://thesunpapers.com/2013/02/27/east-robotics-team-crowned-state-champions-yet-again/' },
+  },
+  { when: 'Feb 3, 2024', title: 'We host an Over Under tournament', text: 'The SBHS Robotics VRC Over Under Competition brings teams to South Brunswick High School.', source: { label: 'Official event page', href: eventUrl('RE-VRC-23-1852') } },
+  { when: 'Feb 15, 2025', title: 'We host a High Stakes tournament', text: 'A high school tournament with room for 56 teams at South Brunswick High School.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-24-7128') } },
+  { when: 'Mar 15, 2025', title: '750B qualifies for Worlds', text: '750B finishes as Tournament Finalists and wins the Think Award at the NJ State Championship.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-24-9258') } },
+  { when: 'May 2025', title: '750B competes at the World Championship', text: 'The team competes in the Math division of the high school event in Dallas, Texas.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-24-8909') } },
+  { when: 'Feb 21, 2026', title: 'We host a Push Back tournament', text: '750C wins the Excellence Award at our home event; 750S, 750E, and 750W also take home awards.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-25-0079') } },
+];
+---
+<Layout title="About" description="What South Brunswick Robotics does, how the VEX V5 Robotics Competition works, our history since 2012, and what to expect if you join.">
+  <PageHero
+    index="01"
+    label="About"
+    lines={[{ text: 'Built by', style: 'outline' }, { text: 'students' }, { text: 'since 2012', style: 'gold' }]}
+    intro="South Brunswick Robotics is the VEX V5 Robotics Competition program at South Brunswick High School in Monmouth Junction, New Jersey. Students run six competition teams, 750B, C, E, R, S, and W, each designing, building, and programming its own robot."
+    meta={[
+      { k: 'Founded', v: String(site.founded) },
+      { k: 'Teams', v: `${teams.length} · ${seasonLabel(season)}` },
+      { k: 'Students listed', v: `${memberCount(season)} · ${seasonLabel(season)}` },
+      { k: 'Program', v: 'VEX V5RC' },
+    ]}
+    ghost="750"
+  />
+
+  <!-- What is VEX -->
+  <section class="section" aria-labelledby="vex-title">
+    <div class="wrap">
+      <div class="split">
+        <SectionHead num="01" label="The competition" id="vex-title" title={`How VEX <span class="gold">robotics works.</span>`} />
+        <p class="lead" data-reveal style="--d:1">
+          The VEX V5 Robotics Competition is a high school engineering challenge played as a sport. It rewards good robots, good code, and a well-documented process.
+        </p>
+      </div>
+      <ol class="facts">
+        {vex.map((f, i) => (
+          <li class="fact" data-reveal style={`--d:${i % 3}`}>
+            <span class="fact__num display display--italic outline" aria-hidden="true">{pad2(i + 1)}</span>
+            <h3 class="fact__title">{f.title}</h3>
+            <p>{f.text}</p>
+          </li>
+        ))}
+      </ol>
     </div>
+  </section>
+
+  <!-- How the program is organized -->
+  <section class="section org" aria-labelledby="org-title">
+    <div class="wrap">
+      <div class="split">
+        <SectionHead num="02" label="How we are organized" id="org-title" title={`Six teams, <span class="gold">one program.</span>`} />
+        <div class="prose-sb" data-reveal style="--d:1">
+          <p>Every member belongs to one team, and each team builds and competes with its own robot. Teams are led by a captain (or co-captains) and one or more vice-captains. Club leadership, including the presidents and the leads for the build, programming, and notebook workshops, comes from across the teams.</p>
+          <p>The program also runs community events, including a yearly Girl Powered workshop for middle school students, and hosts a VEX tournament at South Brunswick High School.</p>
+        </div>
+      </div>
+
+      <div class="org__grid">
+        <div class="org__teams" data-reveal>
+          <p class="label">Teams · {seasonLabel(season)}</p>
+          <ul>
+            {teams.map((t) => (
+              <li>
+                <a href={`/roster?season=${season}#team-${season}-${t.id}`}>
+                  <TeamId id={t.id} />
+                  <span class="label label--sm">{t.members.length} members</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="org__officers" data-reveal style="--d:1">
+          <p class="label">Club leadership · {seasonLabel(season)}</p>
+          <ul>
+            {clubOfficers.map((o) => (
+              <li>
+                <span class="org__name">{o.name}</span>
+                <span class="label label--sm">{o.role}{o.team && <> · <TeamId id={o.team} /></>}</span>
+              </li>
+            ))}
+          </ul>
+          <a class="link-arrow" href="/roster">See the full roster <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="section history" aria-labelledby="history-title">
+    <div class="history__year display display--italic outline" aria-hidden="true" data-parallax="0.08">2012</div>
+    <div class="wrap">
+      <div class="split">
+        <SectionHead num="03" label="History" id="history-title" title={`Milestones <span class="gold">on record.</span>`} />
+        <p class="mute" data-reveal style="--d:1">
+          The program has competed since 2012. This list covers the milestones we can document with a source; our records before the 2023–24 season are incomplete.
+        </p>
+      </div>
+      <ol class="milestones">
+        {history.map((h, i) => (
+          <li class="milestone" data-reveal style={`--d:${i % 2}`}>
+            <p class="milestone__when display display--italic">{h.when}</p>
+            <div>
+              <h3 class="milestone__title">{h.title}</h3>
+              <p class="milestone__text">{h.text}</p>
+              {h.source && (
+                <a class="milestone__src" href={h.source.href} target="_blank" rel="noopener noreferrer">
+                  {h.source.label}
+                  <Icon name="arrow-up-right" size={13} />
+                  <span class="sr-only-sb">(opens in a new tab)</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Joining -->
+  <section class="section join" aria-labelledby="join-title">
+    <div class="wrap">
+      <div class="split">
+        <SectionHead num="04" label="Joining" id="join-title" title={`No experience <span class="gold">required.</span>`} />
+        <div class="prose-sb" data-reveal style="--d:1">
+          <p>
+            You do not need to know CAD, programming, or how to use tools before you join. Strong teams are built from people with different talents: builders, programmers, drivers, note-takers, and organizers.
+          </p>
+          <p>
+            What matters most is motivation. Competitive robotics is a real commitment, with work outside school that can include some weekends and breaks during the season.
+          </p>
+        </div>
+      </div>
+      <ul class="expect">
+        <li data-reveal><span class="label label--gold">Bring</span><h3>Curiosity</h3><p>Be willing to try things, get them wrong, and fix them.</p></li>
+        <li data-reveal style="--d:1"><span class="label label--gold">Expect</span><h3>Real time</h3><p>Teams put in hours outside class, especially around tournaments.</p></li>
+        <li data-reveal style="--d:2"><span class="label label--gold">Learn</span><h3>On the team</h3><p>Design, building, coding, driving, and documentation are learned by doing.</p></li>
+      </ul>
+      <p class="join__ask" data-reveal>
+        Questions about joining, meetings, or the season calendar? Email <a href={mailto('Joining SB Robotics')}>{site.email}</a> and the team will point you in the right direction.
+      </p>
+    </div>
+  </section>
+
+  <ClosingCTA />
 </Layout>
+
+<style>
+  .split { display: grid; gap: 1.5rem 4rem; align-items: end; }
+  @media (min-width: 1024px) { .split { grid-template-columns: 7fr 5fr; } }
+
+  .facts {
+    list-style: none;
+    margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+  }
+  @media (min-width: 720px) { .facts { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+  .fact { background: var(--color-ink); padding: 2rem 1.75rem 2.25rem; display: grid; gap: 0.9rem; align-content: start; }
+  .fact__num { font-size: 4rem; line-height: 0.8; }
+  .fact__title { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; text-transform: uppercase; line-height: 1.05; }
+  .fact p { color: var(--color-mute); font-size: 0.99rem; }
+  .fact:nth-child(5) { background: var(--color-gold); color: var(--color-ink); }
+  .fact:nth-child(5) p { color: rgb(10 10 11 / 0.8); }
+  .fact:nth-child(5) .fact__num { -webkit-text-stroke-color: var(--color-ink); }
+  @media (min-width: 1100px) { .fact:nth-child(5) { grid-column: span 2; } }
+
+  .org { background: var(--color-coal); border-block: 1px solid var(--color-line); }
+  .org__grid { margin-top: clamp(3rem, 6vw, 4.5rem); display: grid; gap: 3rem; }
+  @media (min-width: 1024px) { .org__grid { grid-template-columns: 7fr 5fr; gap: 4rem; } }
+  .org__teams ul { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--color-line); }
+  @media (min-width: 640px) { .org__teams ul { grid-template-columns: repeat(3, 1fr); } }
+  .org__teams li { border-bottom: 1px solid var(--color-line); }
+  .org__teams a { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem 0; transition: transform var(--dur) var(--ease-out-expo); }
+  .org__teams a:hover { transform: translateX(6px); }
+  .org__teams :global(.team-id) { font-size: clamp(2.75rem, 5vw, 4rem); }
+  .org__officers ul { list-style: none; margin: 1rem 0 1.5rem; padding: 0; border-top: 1px solid var(--color-line); }
+  .org__officers li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--color-line); }
+  .org__name { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; text-transform: uppercase; }
+  .org__officers :global(.team-id) { font-size: 1.05em; font-style: normal; }
+
+  .history { overflow: hidden; }
+  .history__year {
+    position: absolute;
+    right: -0.04em;
+    top: 0.3em;
+    font-size: clamp(10rem, 30vw, 28rem);
+    line-height: 0.8;
+    opacity: 0.14;
+    pointer-events: none;
+  }
+  .milestones { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; border-top: 1px solid var(--color-line); position: relative; }
+  .milestone {
+    display: grid;
+    gap: 0.75rem 2rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 768px) { .milestone { grid-template-columns: 14rem 1fr; } }
+  .milestone__when { font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1; color: var(--color-gold); }
+  .milestone__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.4rem, 2.2vw, 1.85rem); text-transform: uppercase; line-height: 1.05; }
+  .milestone__text { color: var(--color-mute); margin-top: 0.5rem; max-width: 60ch; }
+  .milestone__src { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-dim); }
+  .milestone__src:hover { color: var(--color-gold); }
+
+  .join { border-top: 1px solid var(--color-line); }
+  .expect { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; gap: 2rem; }
+  @media (min-width: 768px) { .expect { grid-template-columns: repeat(3, 1fr); } }
+  .expect li { border-top: 2px solid var(--color-gold); padding-top: 1.25rem; display: grid; gap: 0.6rem; }
+  .expect h3 { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(2.2rem, 3.5vw, 3rem); text-transform: uppercase; line-height: 0.9; }
+  .expect p { color: var(--color-mute); }
+  .join__ask { margin-top: 3rem; color: var(--color-mute); max-width: 60ch; }
+  .join__ask a { color: var(--color-paper); text-decoration: underline; text-decoration-color: var(--color-gold); text-underline-offset: 0.2em; }
+  .join__ask a:hover { color: var(--color-gold); }
+</style>

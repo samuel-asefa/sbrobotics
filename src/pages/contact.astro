@@ -1,18 +1,151 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { mailto, site } from '../data/site';
+import { pad2 } from '../lib/data';
+
+const reasons = [
+  { who: 'Prospective students', text: 'Curious about joining a team, what it involves, or how to get started.', subject: 'Joining SB Robotics' },
+  { who: 'Families', text: 'Questions about the program, the season, or how to support a student on a team.', subject: 'Family question for SB Robotics' },
+  { who: 'Mentors and volunteers', text: 'Engineers, programmers, and tournament volunteers who want to help.', subject: 'Volunteering with SB Robotics' },
+  { who: 'Sponsors and partners', text: 'Organizations interested in supporting the teams or working with us on outreach.', subject: 'Sponsorship or partnership with SB Robotics' },
+];
+const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.school}, ${site.address.street}, ${site.address.city}, ${site.address.state} ${site.address.zip}`)}`;
 ---
-<Layout title="Contact Us | SBHS Robotics">
-    <div class="container">
-        <header class="page-header" style="padding-bottom: 2rem;">
-            <h1 class="text-glow-gold">Contact Us</h1>
-        </header>
-        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-            <p>Have questions or interested in sponsoring us? We'd love to hear from you. The best way to reach us is by email.</p>
-            <h2 style="margin-top: 2rem;">
-                <a href="mailto:robotics@sbschools.org" class="text-gradient-gold">robotics@sbschools.org</a>
-            </h2>
-            <p style="margin-top: 3rem;">You can also find us at:</p>
-            <p style="font-weight: 700;">South Brunswick High School<br>750 Ridge Rd<br>Monmouth Junction, NJ 08852</p>
-        </div>
+<Layout title="Contact" description="Contact South Brunswick Robotics at South Brunswick High School by email: robotics@sbschools.org.">
+  <PageHero
+    index="06"
+    label="Contact"
+    lines={[{ text: 'Get in', style: 'outline' }, { text: 'touch', style: 'gold' }]}
+    intro="Email is the best way to reach South Brunswick Robotics. Pick the option that fits and your email app will open with a subject line filled in."
+    ghost="@"
+  />
+
+  <section class="section mail" aria-labelledby="mail-title">
+    <div class="wrap">
+      <h2 class="label label--gold" id="mail-title">Team email</h2>
+      <a class="mail__big display display--italic" href={mailto()}>
+        <span>robotics</span><span class="gold">@sbschools.org</span>
+      </a>
+      <div class="mail__actions">
+        <a class="btn btn--gold" href={mailto('SB Robotics inquiry')}>
+          <Icon name="mail" size={18} /> Write an email
+        </a>
+        <button class="btn" type="button" data-copy={site.email}>
+          <span data-copy-label>Copy address</span>
+        </button>
+        <p class="label label--sm mail__status" role="status" aria-live="polite" data-copy-status></p>
+      </div>
     </div>
+  </section>
+
+  <section class="section reasons" aria-labelledby="reasons-title">
+    <div class="wrap">
+      <h2 class="h3" id="reasons-title">Who should write</h2>
+      <ul class="reason-list">
+        {reasons.map((r, i) => (
+          <li data-reveal style={`--d:${i}`}>
+            <a class="reason" href={mailto(r.subject)}>
+              <span class="reason__num label label--gold">{pad2(i + 1)}</span>
+              <span class="reason__who">{r.who}</span>
+              <span class="reason__text">{r.text}</span>
+              <span class="reason__go label label--sm">Email with subject “{r.subject}” <Icon name="arrow-right" size={14} /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section visit" aria-labelledby="visit-title">
+    <div class="wrap visit__grid">
+      <div>
+        <p class="label label--gold">Where we are</p>
+        <h2 class="h2 visit__title" id="visit-title">{site.school}</h2>
+      </div>
+      <div class="visit__info">
+        <address>
+          {site.address.street}<br />
+          {site.address.city}, {site.address.state} {site.address.zip}
+        </address>
+        <a class="link-arrow" href={mapUrl} target="_blank" rel="noopener noreferrer">
+          <Icon name="pin" size={16} /> Open in Google Maps <span class="sr-only-sb">(opens in a new tab)</span>
+        </a>
+        <p class="mute visit__note">
+          Meeting times and locations are not listed on this site. Email the team to ask about visiting or joining.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+      const label = btn.querySelector('[data-copy-label]');
+      const status = document.querySelector('[data-copy-status]');
+      btn.addEventListener('click', async () => {
+        const text = btn.dataset.copy!;
+        try {
+          await navigator.clipboard.writeText(text);
+          if (label) label.textContent = 'Copied';
+          if (status) status.textContent = `${text} copied to clipboard`;
+        } catch {
+          if (status) status.textContent = `Copy failed. The address is ${text}`;
+        }
+        window.setTimeout(() => {
+          if (label) label.textContent = 'Copy address';
+        }, 2200);
+      });
+    });
+  </script>
 </Layout>
+
+<style>
+  .mail { padding-top: clamp(3rem, 6vw, 5rem); }
+  .mail__big {
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    font-size: clamp(2.6rem, 9vw, 8.5rem);
+    line-height: 0.9;
+    overflow-wrap: anywhere;
+    background-image: linear-gradient(var(--color-gold), var(--color-gold));
+    background-size: 0% 4px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    padding-bottom: 0.08em;
+    transition: background-size var(--dur-slow) var(--ease-out-expo);
+  }
+  .mail__big:hover, .mail__big:focus-visible { background-size: 100% 4px; }
+  .mail__big { text-transform: lowercase; }
+  .mail__actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; }
+  .mail__status { color: var(--color-gold); min-height: 1em; }
+
+  .reasons { border-top: 1px solid var(--color-line); background: var(--color-coal); }
+  .reason-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); }
+  @media (min-width: 768px) { .reason-list { grid-template-columns: repeat(2, 1fr); } }
+  .reason-list li { display: flex; }
+  .reason {
+    flex: 1;
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 2rem 1.75rem;
+    background: var(--color-ink);
+    transition: background-color var(--dur-fast);
+  }
+  .reason:hover, .reason:focus-visible { background: var(--color-graphite); }
+  .reason:focus-visible { outline-offset: -3px; }
+  .reason__who { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(2rem, 3.4vw, 2.75rem); text-transform: uppercase; line-height: 0.95; transition: color var(--dur-fast); }
+  .reason:hover .reason__who, .reason:focus-visible .reason__who { color: var(--color-gold); }
+  .reason__text { color: var(--color-mute); }
+  .reason__go { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; color: var(--color-paper); }
+
+  .visit { border-top: 1px solid var(--color-line); }
+  .visit__grid { display: grid; gap: 2rem 4rem; align-items: end; }
+  @media (min-width: 1024px) { .visit__grid { grid-template-columns: 7fr 5fr; } }
+  .visit__title { margin-top: 0.75rem; max-width: 14ch; }
+  .visit__info { display: grid; gap: 1rem; justify-items: start; }
+  address { font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; text-transform: uppercase; line-height: 1.1; }
+  .visit__note { max-width: 40ch; font-size: 0.95rem; }
+</style>

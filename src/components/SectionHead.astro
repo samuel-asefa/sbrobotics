@@ -1,0 +1,38 @@
+---
+// Numbered section heading: "03 —— LABEL" above a large condensed title.
+// `title` accepts simple inline HTML (e.g. <span class="gold">word</span>).
+interface Props {
+  num?: string;
+  label: string;
+  title: string;
+  id?: string;
+  as?: 'h2' | 'h3';
+  class?: string;
+}
+const { num, label, title, id, as: Tag = 'h2', class: cls } = Astro.props;
+---
+<div class:list={['sh', cls]}>
+  <p class="sh__meta" data-reveal="fade">
+    {num && <span class="sh__num">{num}</span>}
+    <span class="sh__rule" aria-hidden="true"></span>
+    <span class="label">{label}</span>
+  </p>
+  <Tag class="h2 sh__title" id={id} data-reveal set:html={title} />
+</div>
+
+<style>
+  .sh__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  }
+  .sh__num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-gold);
+    letter-spacing: 0.1em;
+  }
+  .sh__rule { width: 2.5rem; height: 1px; background: var(--color-gold); }
+  .sh__title { max-width: 16ch; }
+</style>

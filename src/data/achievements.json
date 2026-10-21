@@ -1,94 +1,123 @@
 {
-    "2025": {
-      "competitions": [
-        {
-          "date": "03/15/25",
-          "name": "VEX V5 High Stakes NJ State Championship - High School Level",
-          "awards": [
-            { "award": "Tournament Finalists", "team": "750B" },
-            { "award": "Think Award", "team": "750B" },
-            { "award": "Sportsmanship Award", "team": "750C" }
-          ],
-          "eventUrl": "https://www.robotevents.com/RE-V5RC-24-9258.html"
-        },
-        {
-          "date": "02/22/25",
-          "name": "Franklin High School - High Stakes at the Coliseum",
-          "awards": [
-            { "award": "Excellence Award", "team": "750B" },
-            { "award": "Tournament Champions", "team": "750B" },
-            { "award": "Robot Skills Champion", "team": "750B" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-8565.html#general-info"
-        },
-        {
-          "date": "02/15/25",
-          "name": "SBHS Robotics V5RC High Stakes",
-          "awards": [
-            { "award": "Excellence Award", "team": "750B" },
-            { "award": "Robot Skills Champion", "team": "750B" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-7128.html#general-info"
-        },
-        {
-          "date": "02/01/25",
-          "name": "Colts Neck High School High Stakes",
-          "awards": [
-            { "award": "Tournament Champions", "team": "750B" },
-            { "award": "Robot Skills Champion", "team": "750B" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-6777.html#general-info"
-        },
-        {
-          "date": "01/25/25",
-          "name": "CCHS High Stakes Tournament",
-          "awards": [
-            { "award": "Tournament Champions", "team": "750S" },
-            { "award": "Tournament Champions", "team": "750C" },
-            { "award": "Design Award", "team": "750R" },
-            { "award": "Excellence Award", "team": "750W" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-V5RC-24-6413.html#general-info"
-        }
-      ]
-    },
-    "2024": {
-      "competitions": [
-        {
-          "date": "02/18/24",
-          "name": "VRC Over Under Encounter",
-          "awards": [
-            { "award": "Innovate Award", "team": "750R" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-4000.html#general-info"
-        },
-        {
-            "date": "02/03/24",
-            "name": "SBHS Robotics VRC Over Under Competition 2023-2024",
-            "awards": [
-              { "award": "Tournament Champions", "team": "750B" },
-              { "award": "Tournament Champions", "team": "750C" },
-              { "award": "Design Award", "team": "750R" },
-              { "award": "Amaze Award", "team": "750W" }
-            ],
-            "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-1852.html#general-info"
-          },
-          {
-            "date": "01/27/24",
-            "name": "Camden Catholic High School VRC Over Under Tournament",
-            "awards": [
-              { "award": "Tournament Champion", "team": "750B" }
-            ],
-            "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-3162.html#awards"
-          },
-        {
-          "date": "01/13/24",
-          "name": "VRC Over Under Sparta Blitz",
-          "awards": [
-            { "award": "Design Award", "team": "750R" }
-          ],
-          "eventUrl": "https://www.robotevents.com/robot-competitions/vex-robotics-competition/RE-VRC-23-3162.html#awards"
-        }
-      ]
-    }
+  "2026": {
+    "competitions": [
+      {
+        "date": "2026-02-21",
+        "name": "SBHS Robotics VEX V5 Push Back Tournament",
+        "location": "South Brunswick High School, NJ",
+        "eventCode": "RE-V5RC-25-0079",
+        "hosted": true,
+        "awards": [
+          { "award": "Excellence Award", "team": "750C" },
+          { "award": "Robot Skills Champion", "team": "750S" },
+          { "award": "Tournament Finalists", "team": "750S" },
+          { "award": "Innovate Award", "team": "750E" },
+          { "award": "Amaze Award", "team": "750W" }
+        ]
+      }
+    ]
+  },
+  "2025": {
+    "competitions": [
+      {
+        "date": "2025-03-15",
+        "name": "VEX V5 High Stakes NJ State Championship – High School",
+        "location": "NJIT, Newark, NJ",
+        "eventCode": "RE-V5RC-24-9258",
+        "awards": [
+          { "award": "Tournament Finalists", "team": "750B" },
+          { "award": "Think Award", "team": "750B" },
+          { "award": "Sportsmanship Award", "team": "750C" }
+        ]
+      },
+      {
+        "date": "2025-02-22",
+        "name": "Franklin High School – High Stakes at the Coliseum",
+        "location": "Franklin High School, Somerset, NJ",
+        "eventCode": "RE-V5RC-24-8565",
+        "awards": [
+          { "award": "Excellence Award", "team": "750B" },
+          { "award": "Tournament Champions", "team": "750B" },
+          { "award": "Robot Skills Champion", "team": "750B" }
+        ]
+      },
+      {
+        "date": "2025-02-15",
+        "name": "SBHS Robotics V5RC High Stakes",
+        "location": "South Brunswick High School, NJ",
+        "eventCode": "RE-V5RC-24-7128",
+        "hosted": true,
+        "awards": [
+          { "award": "Excellence Award", "team": "750B" },
+          { "award": "Robot Skills Champion", "team": "750B" }
+        ]
+      },
+      {
+        "date": "2025-02-01",
+        "name": "Colts Neck High School High Stakes",
+        "location": "Colts Neck High School, NJ",
+        "eventCode": "RE-V5RC-24-6777",
+        "awards": [
+          { "award": "Tournament Champions", "team": "750B" },
+          { "award": "Robot Skills Champion", "team": "750B" }
+        ]
+      },
+      {
+        "date": "2025-01-25",
+        "name": "CCHS High Stakes Tournament",
+        "location": "Camden Catholic High School, Cherry Hill, NJ",
+        "eventCode": "RE-V5RC-24-6413",
+        "awards": [
+          { "award": "Tournament Champions", "team": "750S" },
+          { "award": "Tournament Champions", "team": "750C" },
+          { "award": "Design Award", "team": "750R" },
+          { "award": "Excellence Award", "team": "750W" }
+        ]
+      }
+    ]
+  },
+  "2024": {
+    "competitions": [
+      {
+        "date": "2024-02-18",
+        "name": "VRC Over Under Encounter",
+        "location": "Millburn High School, NJ",
+        "eventCode": "RE-VRC-23-4000",
+        "awards": [
+          { "award": "Innovate Award", "team": "750R" }
+        ]
+      },
+      {
+        "date": "2024-02-03",
+        "name": "SBHS Robotics VRC Over Under Competition 2023–2024",
+        "location": "South Brunswick High School, NJ",
+        "eventCode": "RE-VRC-23-1852",
+        "hosted": true,
+        "awards": [
+          { "award": "Tournament Champions", "team": "750B" },
+          { "award": "Tournament Champions", "team": "750C" },
+          { "award": "Design Award", "team": "750R" },
+          { "award": "Amaze Award", "team": "750W" }
+        ]
+      },
+      {
+        "date": "2024-01-27",
+        "name": "Camden Catholic High School VRC Over Under Tournament",
+        "location": "Camden Catholic High School, Cherry Hill, NJ",
+        "eventCode": "RE-VRC-23-1564",
+        "awards": [
+          { "award": "Tournament Champions", "team": "750B" }
+        ]
+      },
+      {
+        "date": "2024-01-13",
+        "name": "VRC Over Under Sparta Blitz",
+        "location": "Sparta High School, NJ",
+        "eventCode": "RE-VRC-23-3162",
+        "awards": [
+          { "award": "Design Award", "team": "750R" }
+        ]
+      }
+    ]
   }
+}

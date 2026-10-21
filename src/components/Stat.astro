@@ -1,0 +1,59 @@
+---
+// A large number with a label and an honest scope line.
+// The real value is in the HTML; motion.ts only animates up to it.
+interface Props {
+  value: number;
+  label: string;
+  scope: string;
+  pad?: number;
+  suffix?: string;
+  d?: number;
+}
+const { value, label, scope, pad = 0, suffix = '', d = 0 } = Astro.props;
+const shown = String(value).padStart(pad, '0');
+---
+<div class="stat" data-reveal style={`--d:${d}`}>
+  <p class="stat__num">
+    <span class="sr-only-sb">{value}{suffix}</span>
+    <span aria-hidden="true"><span data-count={value} data-pad={pad || undefined}>{shown}</span>{suffix && <span class="stat__suffix">{suffix}</span>}</span>
+  </p>
+  <p class="stat__label">{label}</p>
+  <p class="stat__scope label label--sm">{scope}</p>
+</div>
+
+<style>
+  .stat {
+    position: relative;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--color-line-strong);
+  }
+  .stat::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 2.5rem;
+    height: 3px;
+    background: var(--color-gold);
+  }
+  .stat__num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-style: italic;
+    font-size: clamp(5rem, 10vw, 9rem);
+    line-height: 0.82;
+    color: var(--color-gold);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .stat__suffix { font-size: 0.5em; vertical-align: 0.7em; margin-left: 0.05em; }
+  .stat__label {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+  .stat__scope { margin-top: 0.6rem; color: var(--color-dim); max-width: 28ch; }
+</style>

@@ -1,0 +1,132 @@
+---
+// Shared hero for interior pages: tracked label row, oversized
+// solid/outline headline, intro, and optional key facts.
+interface Line { text: string; style?: 'solid' | 'outline' | 'gold' }
+interface Props {
+  index: string;
+  label: string;
+  lines: Line[];
+  intro?: string;
+  meta?: { k: string; v: string }[];
+  ghost?: string;
+}
+const { index, label, lines, intro, meta = [], ghost = '750' } = Astro.props;
+---
+<section class="ph">
+  <div class="ph__ghost display display--italic outline" aria-hidden="true">{ghost}</div>
+  <div class="wrap ph__wrap">
+    <div class="ph__top hero-in" style="--h:0">
+      <p class="label"><span class="gold">{index}</span>&nbsp;&nbsp;//&nbsp;&nbsp;{label}</p>
+      <p class="label ph__school">South Brunswick Robotics · 750</p>
+    </div>
+
+    <h1 class="ph__title display display--italic">
+      {lines.map((l, i) => (
+        <span class="ph__line">
+          <span class:list={['ph__text', l.style === 'outline' && 'outline', l.style === 'gold' && 'gold']} style={`--h:${i + 1}`}>{l.text}</span>
+        </span>
+      ))}
+    </h1>
+
+    {(intro || meta.length > 0) && (
+      <div class="ph__bottom">
+        {intro && <p class="lead hero-in" style={`--h:${lines.length + 1}`}>{intro}</p>}
+        {meta.length > 0 && (
+          <dl class="ph__meta hero-in" style={`--h:${lines.length + 2}`}>
+            {meta.map((m) => (
+              <div>
+                <dt class="label label--sm">{m.k}</dt>
+                <dd>{m.v}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+    )}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .ph {
+    position: relative;
+    padding-top: calc(var(--header-h) + clamp(2.5rem, 7vw, 6rem));
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+    border-bottom: 1px solid var(--color-line);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ph::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(70% 60% at 85% 0%, rgb(255 188 0 / 0.07), transparent 70%),
+      var(--color-ink);
+  }
+  .ph__ghost {
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.18em;
+    z-index: -1;
+    font-size: clamp(12rem, 38vw, 34rem);
+    line-height: 0.8;
+    opacity: 0.22;
+    pointer-events: none;
+    user-select: none;
+  }
+  .ph__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: clamp(1.75rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .ph__school { display: none; }
+  @media (min-width: 768px) { .ph__school { display: block; } }
+
+  .ph__title {
+    font-size: var(--text-giant);
+    display: flex;
+    flex-direction: column;
+    gap: 0.02em;
+  }
+  .ph__line { display: block; overflow: hidden; padding: 0.04em 0.08em 0.06em 0; margin-bottom: -0.06em; }
+  .ph__text { display: inline-block; }
+
+  .ph__bottom {
+    margin-top: clamp(2rem, 4.5vw, 3.5rem);
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+  }
+  @media (min-width: 960px) {
+    .ph__bottom { grid-template-columns: minmax(0, 1fr) auto; }
+  }
+  .ph__meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 2.5rem;
+    margin: 0;
+  }
+  @media (min-width: 640px) { .ph__meta { grid-template-columns: repeat(auto-fit, minmax(9rem, auto)); } }
+  .ph__meta div { border-top: 1px solid var(--color-line-strong); padding-top: 0.7rem; }
+  .ph__meta dd {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
+  /* Entrance: lines rise from a mask, other parts fade up. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ph__text { animation: line-up 1s var(--ease-out-expo) both; animation-delay: calc(120ms + var(--h) * 90ms); }
+    .hero-in { animation: fade-up 900ms var(--ease-out-expo) both; animation-delay: calc(140ms + var(--h) * 90ms); }
+  }
+  @keyframes line-up { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+</style>

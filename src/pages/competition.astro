@@ -1,106 +1,339 @@
 ---
+import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import AwardIcon from '../components/AwardIcon.astro';
+import TeamId from '../components/TeamId.astro';
+import Icon from '../components/Icon.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
+import pitsPhoto from '../assets/photos/sbhs-tournament-pits.jpeg';
+import { eventUrl, mailto, site } from '../data/site';
+import { allEvents, awardKind, formatDate, hostedEvents } from '../lib/data';
+
+const sorted = [...hostedEvents].sort((a, b) => b.date.localeCompare(a.date));
+const [latest, ...archive] = sorted;
+const results = (code: string) => allEvents().find((e) => e.eventCode === code)?.awards ?? [];
+const latestResults = results(latest.eventCode);
+const d = new Date(`${latest.date}T12:00:00Z`);
+const day = d.getUTCDate();
+const month = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d);
+const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(d);
+// Status is worked out when the site is built. Rebuild after an event to flip it to "past".
+const isPast = new Date(`${latest.date}T23:59:59-05:00`).getTime() < Date.now();
+const intro = isPast
+  ? `South Brunswick Robotics has hosted a VEX tournament at South Brunswick High School in ${sorted.length} recorded seasons. The most recent was the ${latest.game} tournament on ${formatDate(latest.date)}. No upcoming SBHS tournament is listed yet.`
+  : `South Brunswick Robotics is hosting the ${latest.name} at South Brunswick High School on ${formatDate(latest.date)}. Registration and official details are on VEX Events.`;
 ---
-<Layout title="SBHS Competition | SBHS Robotics 750">
-    <div class="container">
-        <header class="page-header">
-            <div>
-                <p class="text-gradient-gold">VEX V5 Robotics Competition</p>
-                <h1 class="text-glow-gold">SBHS Robotics V5RC High Stakes</h1>
-            </div>
-        </header>
+<Layout title="Competition" description={`The VEX V5 tournament South Brunswick Robotics hosts at South Brunswick High School: the ${formatDate(latest.date)} ${latest.game} event, its schedule and awards, and earlier tournaments.`}>
+  <PageHero
+    index="04"
+    label="Competition"
+    lines={[{ text: 'Our home', style: 'outline' }, { text: 'tournament' }]}
+    intro={intro}
+    meta={[
+      { k: isPast ? 'Most recent' : 'Next event', v: formatDate(latest.date) },
+      { k: 'Status', v: isPast ? 'Completed' : 'Upcoming' },
+      { k: 'Venue', v: 'SBHS' },
+    ]}
+    ghost="VEX"
+  />
 
-        <section class="competition-main-grid">
-            <div class="info-card">
-                <h3>Event Details</h3>
-                <p><strong>Date:</strong> 15-Feb-2025</p>
-                <p><strong>Event Code:</strong> RE-V5RC-24-7128</p>
-                <p><strong>Price:</strong> $100.00</p>
-                <p><strong>Capacity:</strong> 56 Teams</p>
-                <p><strong>Grade Level:</strong> High School</p>
-                <p><strong>Skills Challenge:</strong> Yes</p>
-            </div>
-            <div class="info-card reg-status-card">
-                <h3>Registration Status</h3>
-                <p class="status-closed">This event is closed to registration.</p>
-                <p>The event has reached capacity and the registration deadline has passed. Teams on the waitlist may still be added.</p>
-                <ul>
-                    <li><strong>Early-Bird Opens:</strong> 2-Sep-2024</li>
-                    <li><strong>Standard Opens:</strong> 4-Jan-2025</li>
-                    <li><strong>Registration Deadline:</strong> 5-Feb-2025</li>
-                    <li><strong>Payment Deadline:</strong> 15-Jan-2025</li>
-                </ul>
-            </div>
-            <div class="info-card">
-                <h3>Venue & Location</h3>
-                <p><strong>South Brunswick High School</strong></p>
-                <p>750 Ridge Road</p>
-                <p>Monmouth Junction, New Jersey 08852</p>
-                <p>United States</p>
-            </div>
-        </section>
+  <!-- Latest event -->
+  <section class="section ev" aria-labelledby="ev-title">
+    <div class="wrap">
+      <div class="ev__top">
+        <div class="ev__date" data-reveal>
+          <span class="ev__month">{month}</span>
+          <span class="ev__day display display--italic">{day}</span>
+          <span class="label">{weekday} · {d.getUTCFullYear()}</span>
+        </div>
+        <div class="ev__intro">
+          <p class="ev__status" data-reveal="fade">
+            <span class:list={['status-dot', !isPast && 'status-dot--live']} aria-hidden="true"></span>
+            <span class="label">{isPast ? 'Past event' : 'Upcoming event'} · {latest.game} season</span>
+          </p>
+          <h2 class="h2 ev__name" id="ev-title" data-reveal>{latest.name}</h2>
+          <p class="mute" data-reveal style="--d:1">
+            A {latest.gradeLevel.toLowerCase()} {latest.program} tournament with room for {latest.capacity} teams, qualification matches, alliance selection, eliminations, a skills challenge, and judged awards. Details below are from the official event listing.
+          </p>
+          <a class="btn" href={eventUrl(latest.eventCode)} target="_blank" rel="noopener noreferrer" data-reveal style="--d:2">
+            Official event page
+            <Icon name="arrow-up-right" size={16} />
+            <span class="sr-only-sb">(opens in a new tab)</span>
+          </a>
+        </div>
+      </div>
 
-        <section class="competition-content">
-            <h2 class="section-title text-gradient-gold">Agenda</h2>
-            <ul class="agenda-list">
-                <li><strong>7:00 AM:</strong> Doors Open</li>
-                <li><strong>7:30 AM - 8:50 AM:</strong> Check-In/Inspection & Practice Fields Open</li>
-                <li><strong>8:00 AM:</strong> Concessions Open / Skills Field Starts</li>
-                <li><strong>9:00 AM:</strong> Opening Ceremony & Drivers Meeting (GYM)</li>
-                <li><strong>9:15 AM - 12:30 PM:</strong> Qualification Rounds</li>
-                <li><strong>10:00 AM:</strong> Remote Engineering Notebook Submission Deadline (via RobotEvents)</li>
-                <li><strong>12:00 PM - 12:30 PM:</strong> Lunch</li>
-                <li><strong>12:30 PM - 3:00 PM:</strong> Complete Qualification Rounds / Skills competitions End</li>
-                <li><strong>3:05 PM - 3:15 PM:</strong> Alliance Selection</li>
-                <li><strong>3:30 PM - 5:45 PM:</strong> Alliance Elimination Matches</li>
-                <li><strong>5:45 PM - 6:00 PM:</strong> Awards and Closing Ceremony</li>
-            </ul>
-
-            <h2 class="section-title text-gradient-gold">Awards & Qualifications</h2>
-            <p>The following awards will be given at the competition. The table below indicates which awards qualify for the Event Region Championship.</p>
-            <table class="awards-table">
-                <thead>
-                    <tr>
-                        <th>Award</th>
-                        <th>Qualifies For</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Excellence Award</td>
-                        <td class="qualifies">Event Region Championship</td>
-                    </tr>
-                    <tr>
-                        <td>Tournament Champions</td>
-                        <td class="qualifies">Event Region Championship</td>
-                    </tr>
-                    <tr>
-                        <td>Tournament Finalists</td>
-                        <td>Does not qualify for any events.</td>
-                    </tr>
-                    <tr>
-                        <td>Design Award</td>
-                        <td class="qualifies">Event Region Championship</td>
-                    </tr>
-                    <tr>
-                        <td>Robot Skills Champion</td>
-                        <td class="qualifies">Event Region Championship</td>
-                    </tr>
-                     <tr>
-                        <td>Judges Award</td>
-                        <td>Does not qualify for any events.</td>
-                    </tr>
-                     <tr>
-                        <td>Innovate Award</td>
-                        <td>Does not qualify for any events.</td>
-                    </tr>
-                    <tr>
-                        <td>Amaze Award</td>
-                        <td>Does not qualify for any events.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
+      <dl class="details">
+        <div><dt class="label label--sm">Date</dt><dd>{formatDate(latest.date)}</dd></div>
+        <div><dt class="label label--sm">Venue</dt><dd>{latest.venue}</dd></div>
+        <div><dt class="label label--sm">Address</dt><dd>{latest.address}</dd></div>
+        <div><dt class="label label--sm">Event code</dt><dd>{latest.eventCode}</dd></div>
+        <div><dt class="label label--sm">Grade level</dt><dd>{latest.gradeLevel}</dd></div>
+        <div><dt class="label label--sm">Capacity</dt><dd>{latest.capacity} teams</dd></div>
+        <div><dt class="label label--sm">Format</dt><dd>{latest.format}</dd></div>
+        <div><dt class="label label--sm">Skills challenge</dt><dd>{latest.skills ? 'Offered' : 'Not offered'}</dd></div>
+      </dl>
     </div>
+  </section>
+
+  <!-- Schedule + awards -->
+  <section class="section day" aria-labelledby="day-title">
+    <div class="wrap day__grid">
+      <div>
+        <SectionHead num="01" label={`Schedule · ${formatDate(latest.date)}`} id="day-title" title={isPast ? `How the day <span class="gold">ran.</span>` : `How the day <span class="gold">runs.</span>`} />
+        <ol class="sched">
+          {latest.schedule.map((s, i) => (
+            <li data-reveal style={`--d:${Math.min(i, 4)}`}>
+              <span class="sched__time">{s.time}</span>
+              <span class="sched__item">{s.item}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div>
+        <SectionHead num="02" label="Awards offered" id="awards-title" title={`What teams <span class="gold">played for.</span>`} as="h2" />
+        <table class="atable">
+          <caption class="sr-only-sb">Awards offered at the {latest.name} and what they qualified for</caption>
+          <thead><tr><th scope="col">Award</th><th scope="col">Qualifies for</th></tr></thead>
+          <tbody>
+            {latest.awardsOffered.map((a) => (
+              <tr>
+                <th scope="row"><AwardIcon kind={awardKind(a.award)} size={20} class="atable__icon" />{a.award}</th>
+                <td class:list={[a.qualifies && 'q']}>{a.qualifies ?? 'Does not qualify'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SB results at the event -->
+  {latestResults.length > 0 && (
+    <section class="section home" aria-labelledby="home-title">
+      <div class="wrap home__grid">
+        <div>
+          <SectionHead num="03" label="On home turf" id="home-title" title={`SB teams <span class="gold">at our event.</span>`} />
+          <p class="mute home__note" data-reveal>Awards won by South Brunswick teams at our own tournament, from the official results.</p>
+        </div>
+        <ul class="wins">
+          {latestResults.map((a, i) => (
+            <li data-reveal style={`--d:${i}`}>
+              <AwardIcon kind={awardKind(a.award)} size={30} class="wins__icon" />
+              <span class="wins__award">{a.award}</span>
+              <TeamId id={a.team} class="wins__team" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- Archive -->
+  <section class="section past" aria-labelledby="past-title">
+    <div class="wrap">
+      <div class="past__head">
+        <SectionHead num="04" label="Archive" id="past-title" title={`Earlier <span class="gold">tournaments.</span>`} />
+        <figure class="past__photo" data-reveal>
+          <div class="frame">
+            <Picture src={pitsPhoto} formats={['avif', 'webp']} widths={[259]} sizes="259px" alt="Teams working at their pit tables in the South Brunswick High School commons during a tournament." />
+          </div>
+          <figcaption class="caption">Team pits during a tournament at South Brunswick High School</figcaption>
+        </figure>
+      </div>
+
+      <div class="past__list">
+        {archive.map((ev) => {
+          const sb = results(ev.eventCode);
+          return (
+            <details class="past__item" data-reveal>
+              <summary>
+                <span class="past__date label label--gold">{formatDate(ev.date)}</span>
+                <span class="past__name">{ev.name}</span>
+                <span class="chip">Past · {ev.game}</span>
+                <span class="past__toggle" aria-hidden="true"></span>
+              </summary>
+              <div class="past__body">
+                <dl class="details details--compact">
+                  <div><dt class="label label--sm">Venue</dt><dd>{ev.venue}</dd></div>
+                  <div><dt class="label label--sm">Address</dt><dd>{ev.address}</dd></div>
+                  <div><dt class="label label--sm">Event code</dt><dd>{ev.eventCode}</dd></div>
+                  <div><dt class="label label--sm">Grade level</dt><dd>{ev.gradeLevel}</dd></div>
+                  {ev.capacity && <div><dt class="label label--sm">Capacity</dt><dd>{ev.capacity} teams</dd></div>}
+                </dl>
+
+                {sb.length > 0 && (
+                  <div class="past__block">
+                    <h3 class="label">SB team awards at this event</h3>
+                    <ul class="wins wins--compact">
+                      {sb.map((a) => (
+                        <li>
+                          <AwardIcon kind={awardKind(a.award)} size={22} class="wins__icon" />
+                          <span class="wins__award">{a.award}</span>
+                          <TeamId id={a.team} class="wins__team" />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {ev.schedule.length > 0 && (
+                  <div class="past__block">
+                    <h3 class="label">Schedule</h3>
+                    <ol class="sched sched--compact">
+                      {ev.schedule.map((s) => (
+                        <li><span class="sched__time">{s.time}</span><span class="sched__item">{s.item}</span></li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+
+                {ev.awardsOffered.length > 0 && (
+                  <div class="past__block">
+                    <h3 class="label">Awards offered</h3>
+                    <table class="atable atable--compact">
+                      <caption class="sr-only-sb">Awards offered at the {ev.name}</caption>
+                      <thead><tr><th scope="col">Award</th><th scope="col">Qualifies for</th></tr></thead>
+                      <tbody>
+                        {ev.awardsOffered.map((a) => (
+                          <tr>
+                            <th scope="row">{a.award}</th>
+                            <td class:list={[a.qualifies && 'q']}>{a.qualifies ?? 'Does not qualify'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                <a class="link-arrow" href={eventUrl(ev.eventCode)} target="_blank" rel="noopener noreferrer">
+                  Official event page <Icon name="arrow-up-right" size={16} /><span class="sr-only-sb"> (opens in a new tab)</span>
+                </a>
+              </div>
+            </details>
+          );
+        })}
+      </div>
+
+      <div class="next" data-reveal>
+        <p class="label label--gold">Looking for an upcoming event?</p>
+        <p>
+          Current VEX tournaments, including any future South Brunswick events, are listed on <a href="https://events.vex.com/" target="_blank" rel="noopener noreferrer">VEX Events<span class="sr-only-sb"> (opens in a new tab)</span></a>. For questions about our tournament, email <a href={mailto('SBHS tournament question')}>{site.email}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCTA />
 </Layout>
+
+<style>
+  .ev__top { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 1024px) { .ev__top { grid-template-columns: 4fr 8fr; gap: 4rem; } }
+  .ev__date {
+    display: grid;
+    justify-items: start;
+    padding: 1.75rem 1.75rem 1.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-top: 3px solid var(--color-gold);
+    background: var(--color-coal);
+    max-width: 22rem;
+  }
+  .ev__month { font-family: var(--font-display); font-weight: 800; font-size: 2rem; text-transform: uppercase; color: var(--color-gold); line-height: 1; }
+  .ev__day { font-size: clamp(8rem, 16vw, 12rem); line-height: 0.8; margin: 0.5rem 0 1rem; }
+  .ev__intro { display: grid; gap: 1.25rem; justify-items: start; }
+  .ev__status { display: flex; align-items: center; gap: 0.6rem; }
+  .status-dot { width: 10px; height: 10px; background: var(--color-dim); border-radius: 50%; }
+  .status-dot--live { background: var(--color-gold); }
+  .ev__name { max-width: 18ch; }
+  .ev__intro .mute { max-width: 56ch; }
+
+  .details {
+    margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    border-top: 1px solid var(--color-line);
+    border-left: 1px solid var(--color-line);
+  }
+  .details div { padding: 1.1rem 1.25rem 1.25rem; border-right: 1px solid var(--color-line); border-bottom: 1px solid var(--color-line); }
+  .details dd { margin: 0.45rem 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; text-transform: uppercase; line-height: 1.1; }
+  .details--compact { margin-top: 0; }
+  .details--compact dd { font-size: 1.1rem; }
+
+  .day { background: var(--color-coal); border-block: 1px solid var(--color-line); }
+  .day__grid { display: grid; gap: 4rem; }
+  @media (min-width: 1024px) { .day__grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .sched { list-style: none; margin: 2.5rem 0 0; padding: 0; border-top: 1px solid var(--color-line); }
+  .sched li { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1rem; padding: 0.95rem 0; border-bottom: 1px solid var(--color-line); }
+  .sched__time { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-gold); letter-spacing: 0.04em; padding-top: 0.15rem; }
+  .sched__item { color: var(--color-paper); }
+  .sched--compact { margin-top: 0.75rem; }
+  .sched--compact li { padding: 0.6rem 0; }
+  @media (max-width: 479px) { .sched li { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+  .atable { width: 100%; margin-top: 2.5rem; border-collapse: collapse; }
+  .atable th, .atable td { text-align: left; padding: 0.9rem 0.5rem 0.9rem 0; border-bottom: 1px solid var(--color-line); vertical-align: middle; }
+  .atable thead th { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-mute); border-bottom-color: var(--color-line-strong); }
+  .atable tbody th { font-weight: 500; display: flex; align-items: center; gap: 0.75rem; }
+  .atable :global(.atable__icon) { color: var(--color-gold); flex: none; }
+  .atable td { color: var(--color-dim); font-size: 0.95rem; }
+  .atable td.q { color: var(--color-paper); }
+  .atable td.q::before { content: ""; display: inline-block; width: 7px; height: 7px; background: var(--color-gold); margin-right: 0.55rem; transform: rotate(45deg); vertical-align: 0.1em; }
+  .atable--compact { margin-top: 0.5rem; }
+  .atable--compact th, .atable--compact td { padding: 0.6rem 0.5rem 0.6rem 0; }
+
+  .home__grid { display: grid; gap: 2.5rem; align-items: end; }
+  @media (min-width: 1024px) { .home__grid { grid-template-columns: 5fr 7fr; gap: 4rem; } }
+  .home__note { margin-top: 1rem; max-width: 34rem; }
+  .wins { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-line); }
+  .wins li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-line); }
+  .wins :global(.wins__icon) { color: var(--color-gold); }
+  .wins__award { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.3rem, 2.2vw, 1.75rem); text-transform: uppercase; line-height: 1.05; }
+  .wins :global(.wins__team) { font-size: clamp(2rem, 3.5vw, 2.75rem); }
+  .wins--compact { margin-top: 0.5rem; }
+  .wins--compact li { padding: 0.65rem 0; }
+  .wins--compact .wins__award { font-size: 1.15rem; }
+  .wins--compact :global(.wins__team) { font-size: 1.5rem; }
+
+  .past { border-top: 1px solid var(--color-line); }
+  .past__head { display: grid; gap: 2.5rem; align-items: end; }
+  @media (min-width: 900px) { .past__head { grid-template-columns: 1fr auto; } }
+  .past__photo { width: 259px; max-width: 100%; }
+  .past__photo .frame { aspect-ratio: 259 / 194; filter: saturate(0.8); }
+  .past__photo :global(picture) { display: block; height: 100%; }
+  .past__list { margin-top: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid var(--color-line); }
+  .past__item { border-bottom: 1px solid var(--color-line); }
+  .past__item summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1.5rem;
+    align-items: center;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .past__item summary::-webkit-details-marker { display: none; }
+  @media (min-width: 900px) { .past__item summary { grid-template-columns: 10rem 1fr auto auto; } }
+  .past__date { grid-column: 1 / -1; }
+  @media (min-width: 900px) { .past__date { grid-column: auto; } }
+  .past__name { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.35rem, 2.4vw, 1.9rem); text-transform: uppercase; line-height: 1.05; }
+  .past__item .chip { display: none; }
+  @media (min-width: 900px) { .past__item .chip { display: inline-flex; } }
+  .past__toggle { position: relative; width: 44px; height: 44px; border: 1px solid var(--color-line-strong); border-radius: 50%; transition: transform var(--dur) var(--ease-out-expo), background-color var(--dur-fast), border-color var(--dur-fast); }
+  .past__toggle::before, .past__toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; background: currentColor; transform: translate(-50%, -50%); }
+  .past__toggle::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform var(--dur) var(--ease-out-expo); }
+  .past__item[open] .past__toggle { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  .past__item[open] .past__toggle::after { transform: translate(-50%, -50%) rotate(0deg); }
+  .past__item summary:hover .past__toggle { border-color: var(--color-gold); }
+  .past__body { padding: 0 0 2.5rem; display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .past__body { padding-left: 11.5rem; } }
+  .past__block h3 { margin-bottom: 0.25rem; }
+
+  .next { margin-top: 3.5rem; padding: 1.75rem; border: 1px solid var(--color-line-strong); border-left: 3px solid var(--color-gold); display: grid; gap: 0.6rem; max-width: 52rem; }
+  .next p:last-child { color: var(--color-mute); }
+  .next a { color: var(--color-paper); text-decoration: underline; text-decoration-color: var(--color-gold); text-underline-offset: 0.2em; }
+  .next a:hover { color: var(--color-gold); }
+</style>

@@ -1,0 +1,73 @@
+---
+// Closing invitation used at the end of most pages.
+import Icon from './Icon.astro';
+import { site, mailto } from '../data/site';
+interface Props { label?: string; text?: string; showContactLink?: boolean }
+const {
+  label = 'Get involved',
+  text = 'Prospective students, families, mentors, and sponsors: the quickest way to reach the team is email. Tell us who you are and what you are interested in.',
+  showContactLink = true,
+} = Astro.props;
+---
+<section class="cta" aria-labelledby="cta-title">
+  <div class="cta__lines" aria-hidden="true"></div>
+  <div class="wrap cta__wrap">
+    <p class="label label--gold" data-reveal="fade">{label}</p>
+    <h2 id="cta-title" class="cta__title display display--italic" data-reveal>
+      <span class="outline">Join the</span>
+      <span class="gold">SB Crew</span>
+    </h2>
+    <div class="cta__row">
+      <p class="cta__text" data-reveal style="--d:1">{text}</p>
+      <div class="cta__actions" data-reveal style="--d:2">
+        <a class="btn btn--gold" href={mailto('SB Robotics inquiry')}>
+          <Icon name="mail" size={18} />
+          {site.email}
+        </a>
+        {showContactLink && (
+          <a class="btn" href="/contact">
+            Contact details
+            <Icon name="arrow-right" size={16} class="btn__arrow" />
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    padding-block: clamp(5rem, 11vw, 9rem);
+    border-top: 1px solid var(--color-line);
+    overflow: hidden;
+    isolation: isolate;
+    background: radial-gradient(60% 80% at 100% 100%, rgb(255 188 0 / 0.09), transparent 70%), var(--color-coal);
+  }
+  .cta__lines {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: repeating-linear-gradient(-62deg, transparent 0 46px, rgb(255 255 255 / 0.025) 46px 47px);
+  }
+  .cta__title {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-giant);
+  }
+  .cta__row {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+  }
+  @media (min-width: 960px) { .cta__row { grid-template-columns: minmax(0, 34rem) auto; justify-content: space-between; } }
+  .cta__text { color: var(--color-mute); font-size: 1.125rem; max-width: 46ch; }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .cta__actions .btn { text-transform: none; letter-spacing: 0.02em; }
+  .cta__actions .btn:last-child { text-transform: uppercase; letter-spacing: 0.1em; }
+  @media (max-width: 420px) {
+    .cta__actions .btn { width: 100%; font-size: 0.95rem; }
+  }
+</style>

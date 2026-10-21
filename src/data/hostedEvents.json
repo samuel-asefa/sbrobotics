@@ -1,0 +1,92 @@
+[
+  {
+    "season": "2026",
+    "name": "SBHS Robotics VEX V5 Push Back Tournament",
+    "game": "Push Back",
+    "date": "2026-02-21",
+    "eventCode": "RE-V5RC-25-0079",
+    "venue": "South Brunswick High School",
+    "address": "750 Ridge Road, South Brunswick Township, NJ 08852",
+    "program": "VEX V5 Robotics Competition",
+    "format": "Open tournament, in person",
+    "gradeLevel": "High School",
+    "capacity": 50,
+    "skills": true,
+    "schedule": [
+      { "time": "7:00 AM", "item": "Doors open" },
+      { "time": "7:30 – 8:50 AM", "item": "Check-in and inspection; practice fields open" },
+      { "time": "8:00 AM", "item": "Concessions open; skills runs begin on all four fields" },
+      { "time": "9:00 AM", "item": "Opening ceremony and event meeting (gym)" },
+      { "time": "9:15 AM – 12:30 PM", "item": "Qualification matches and skills" },
+      { "time": "12:00 – 12:30 PM", "item": "Lunch" },
+      { "time": "12:30 – 3:00 PM", "item": "Qualification matches finish; skills closes" },
+      { "time": "3:05 – 3:15 PM", "item": "Alliance selection" },
+      { "time": "3:30 – 5:45 PM", "item": "Elimination matches" },
+      { "time": "5:45 – 6:00 PM", "item": "Awards and closing ceremony" }
+    ],
+    "awardsOffered": [
+      { "award": "Excellence Award", "qualifies": "Event Region Championship" },
+      { "award": "Tournament Champions", "qualifies": "Event Region Championship" },
+      { "award": "Tournament Finalists", "qualifies": "Event Region Championship" },
+      { "award": "Design Award", "qualifies": "Event Region Championship" },
+      { "award": "Robot Skills Champion", "qualifies": "Event Region Championship" },
+      { "award": "Innovate Award", "qualifies": "Event Region Championship" },
+      { "award": "Amaze Award", "qualifies": null },
+      { "award": "Create Award", "qualifies": null },
+      { "award": "Judges Award", "qualifies": null }
+    ]
+  },
+  {
+    "season": "2025",
+    "name": "SBHS Robotics V5RC High Stakes",
+    "game": "High Stakes",
+    "date": "2025-02-15",
+    "eventCode": "RE-V5RC-24-7128",
+    "venue": "South Brunswick High School",
+    "address": "750 Ridge Road, Monmouth Junction, NJ 08852",
+    "program": "VEX V5 Robotics Competition",
+    "format": "Tournament, in person",
+    "gradeLevel": "High School",
+    "capacity": 56,
+    "skills": true,
+    "schedule": [
+      { "time": "7:00 AM", "item": "Doors open" },
+      { "time": "7:30 – 8:50 AM", "item": "Check-in and inspection; practice fields open" },
+      { "time": "8:00 AM", "item": "Concessions open; skills field opens" },
+      { "time": "9:00 AM", "item": "Opening ceremony and drivers meeting (gym)" },
+      { "time": "9:15 AM – 12:30 PM", "item": "Qualification matches" },
+      { "time": "10:00 AM", "item": "Remote engineering notebook submission deadline" },
+      { "time": "12:00 – 12:30 PM", "item": "Lunch" },
+      { "time": "12:30 – 3:00 PM", "item": "Qualification matches finish; skills closes" },
+      { "time": "3:05 – 3:15 PM", "item": "Alliance selection" },
+      { "time": "3:30 – 5:45 PM", "item": "Elimination matches" },
+      { "time": "5:45 – 6:00 PM", "item": "Awards and closing ceremony" }
+    ],
+    "awardsOffered": [
+      { "award": "Excellence Award", "qualifies": "Event Region Championship" },
+      { "award": "Tournament Champions", "qualifies": "Event Region Championship" },
+      { "award": "Tournament Finalists", "qualifies": null },
+      { "award": "Design Award", "qualifies": "Event Region Championship" },
+      { "award": "Robot Skills Champion", "qualifies": "Event Region Championship" },
+      { "award": "Judges Award", "qualifies": null },
+      { "award": "Innovate Award", "qualifies": null },
+      { "award": "Amaze Award", "qualifies": null }
+    ]
+  },
+  {
+    "season": "2024",
+    "name": "SBHS Robotics VRC Over Under Competition 2023–2024",
+    "game": "Over Under",
+    "date": "2024-02-03",
+    "eventCode": "RE-VRC-23-1852",
+    "venue": "South Brunswick High School",
+    "address": "750 Ridge Road, South Brunswick Township, NJ 08852",
+    "program": "VEX Robotics Competition",
+    "format": "Middle and high school, in-person judging",
+    "gradeLevel": "Middle School / High School",
+    "capacity": null,
+    "skills": null,
+    "schedule": [],
+    "awardsOffered": []
+  }
+]

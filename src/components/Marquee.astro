@@ -1,0 +1,97 @@
+---
+// The site's one marquee. Pauses on hover/focus, off screen, with the
+// pause button, and is static under reduced motion.
+import Icon from './Icon.astro';
+interface Props { items: string[]; label?: string }
+const { items, label = 'What our teams work on' } = Astro.props;
+---
+<section class="mq" data-marquee aria-label={label}>
+  <ul class="sr-only-sb">
+    {items.map((i) => <li>{i}</li>)}
+  </ul>
+  <div class="mq__viewport" aria-hidden="true">
+    <div class="mq__track">
+      {[0, 1].map(() => (
+        <div class="mq__group">
+          {items.map((i) => (
+            <span class="mq__item">
+              <span>{i}</span>
+              <span class="mq__sep">/</span>
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+  <button class="mq__toggle" type="button" data-marquee-toggle aria-pressed="false" aria-label="Pause scrolling list">
+    <Icon name="pause" size={14} class="mq__pause" />
+    <Icon name="play" size={14} class="mq__play" />
+  </button>
+</section>
+
+<style>
+  .mq {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-block: 1px solid var(--color-line);
+    background: var(--color-coal);
+  }
+  .mq__viewport {
+    flex: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .mq__track {
+    display: flex;
+    width: max-content;
+    animation: mq 46s linear infinite;
+  }
+  .mq__group { display: flex; flex: none; }
+  .mq__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.15rem 0 1.15rem 2rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .mq__sep { color: var(--color-gold); font-style: italic; }
+
+  .mq:hover .mq__track,
+  .mq:focus-within .mq__track,
+  .mq[data-offscreen="true"] .mq__track,
+  .mq[data-user-paused="true"] .mq__track { animation-play-state: paused; }
+
+  .mq__toggle {
+    flex: none;
+    width: 52px;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-left: 1px solid var(--color-line);
+    background: var(--color-coal);
+    color: var(--color-mute);
+    cursor: pointer;
+  }
+  .mq__toggle:hover { color: var(--color-gold); }
+  .mq__toggle :global(.mq__play) { display: none; }
+  .mq[data-user-paused="true"] .mq__toggle :global(.mq__play) { display: block; }
+  .mq[data-user-paused="true"] .mq__toggle :global(.mq__pause) { display: none; }
+
+  @keyframes mq { to { transform: translate3d(-50%, 0, 0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mq__track { animation: none; }
+    .mq__group + .mq__group { display: none; }
+    .mq__group { flex-wrap: wrap; }
+    .mq__viewport { mask-image: none; }
+    .mq__toggle { display: none; }
+  }
+</style>

@@ -1,99 +1,384 @@
 ---
-import Layout from '../layouts/Layout.astro'; // Assuming a general layout file
-import achievementsData from '../data/achievements.json';
-import rosterData from '../data/roster.json';
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import AwardIcon from '../components/AwardIcon.astro';
+import TeamId from '../components/TeamId.astro';
+import Icon from '../components/Icon.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
+import { eventUrl } from '../data/site';
+import {
+  AWARD_KINDS,
+  allAwards,
+  allEvents,
+  allTeamIds,
+  awardKind,
+  awardSeasons,
+  countByKind,
+  formatDate,
+  formatRange,
+  seasonGame,
+  seasonLabel,
+  seasonMeta,
+  seasonNote,
+} from '../lib/data';
 
-const years = Object.keys(achievementsData).sort((a, b) => b.localeCompare(a));
-const firstYear = years[0];
+const awards = allAwards();
+const events = allEvents();
+const kindCounts = countByKind(awards);
+const kinds = AWARD_KINDS.filter((k) => (kindCounts.get(k.kind) ?? 0) > 0);
+const teams = allTeamIds();
+const teamsAwarded = new Set(awards.map((a) => a.team)).size;
+const excellence = kindCounts.get('excellence') ?? 0;
 
-const allTeams = new Set();
-Object.values(rosterData).forEach(year => {
-  Object.keys(year['High School']).forEach(team => allTeams.add(team));
-});
+const groups = awardSeasons.map((season) => ({
+  season,
+  label: seasonLabel(season),
+  game: seasonGame(season),
+  note: seasonNote(season),
+  events: events.filter((e) => e.season === season),
+  milestones: seasonMeta(season)?.milestones ?? [],
+}));
 ---
+<Layout title="Awards" description="The South Brunswick Robotics trophy case: team awards by season and team, with dates and links to official VEX event results.">
+  <PageHero
+    index="03"
+    label="Awards"
+    lines={[{ text: 'Trophy', style: 'outline' }, { text: 'Case', style: 'gold' }]}
+    intro="Team awards from the events we have on record, each linked to the official results. This is a selected archive covering 2023–24 onward, not a complete history of the program."
+    meta={[
+      { k: 'Team awards', v: String(awards.length) },
+      { k: 'Events', v: String(events.length) },
+      { k: 'Seasons', v: String(awardSeasons.length) },
+    ]}
+  />
 
-<Layout title="Achievements | SB Robotics">
-  <main class="container">
-    <div class="page-header">
-      <h1 class="text-gradient-gold text-glow-gold">Awards</h1>
-      <div class="year-selector">
-        {years.map(year => {
-          const season = `${parseInt(year) - 1}-${year.slice(2)}`;
-          return <a href="#" data-year={year} class={year === firstYear ? 'active' : ''}>{season}</a>;
-        })}
+  <div class="filters" data-filters>
+    <div class="wrap filters__inner">
+      <div class="filters__group" role="group" aria-labelledby="f-season">
+        <p class="label label--sm" id="f-season">Season</p>
+        <div class="filters__btns">
+          <button type="button" class="fbtn" data-filter="season" data-value="all" aria-pressed="true">All</button>
+          {awardSeasons.map((s) => (
+            <button type="button" class="fbtn" data-filter="season" data-value={s} aria-pressed="false">{seasonLabel(s)}</button>
+          ))}
+        </div>
+      </div>
+      <div class="filters__group" role="group" aria-labelledby="f-team">
+        <p class="label label--sm" id="f-team">Team</p>
+        <div class="filters__btns">
+          <button type="button" class="fbtn" data-filter="team" data-value="all" aria-pressed="true">All</button>
+          {teams.map((t) => (
+            <button type="button" class="fbtn fbtn--team" data-filter="team" data-value={t} aria-pressed="false">{t}</button>
+          ))}
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="team-filter-container" style="margin-bottom: 2rem; text-align: center;">
-      <label for="team-selector" style="margin-right: 1rem; font-size: 1.125rem;">Filter by Team:</label>
-      <select id="team-selector" style="padding: 0.5rem; border-radius: 0.25rem; background-color: var(--color-gray-dark); color: var(--color-white); border: 1px solid var(--color-gray-medium);">
-        <option value="all">All Teams</option>
-        {[...allTeams].sort().map(team => <option value={team}>{team}</option>)}
-      </select>
+  <section class="section summary" aria-labelledby="summary-title">
+    <div class="wrap">
+      <h2 class="sr-only-sb" id="summary-title">Summary</h2>
+      <p class="summary__status label" aria-live="polite" data-status>
+        Showing all {awards.length} team awards from {events.length} events
+      </p>
+      <dl class="summary__grid">
+        <div class="sum"><dt class="label label--sm">Team awards</dt><dd data-sum="awards">{awards.length}</dd></div>
+        <div class="sum"><dt class="label label--sm">Events</dt><dd data-sum="events">{events.length}</dd></div>
+        <div class="sum"><dt class="label label--sm">Teams awarded</dt><dd data-sum="teams">{teamsAwarded}</dd></div>
+        <div class="sum"><dt class="label label--sm">Excellence Awards</dt><dd data-sum="excellence">{excellence}</dd></div>
+      </dl>
+      <p class="summary__rule label label--sm">
+        Counting rule: one team award = one team receiving one award at one event. When two alliance partners both win Tournament Champions, that counts as two.
+      </p>
+
+      <h2 class="h3 case__title">By award</h2>
+      <ul class="case">
+        {kinds.map((k, i) => (
+          <li class="trophy" data-kind-tile={k.kind} data-reveal style={`--d:${i % 4}`}>
+            <div class="trophy__top">
+              <AwardIcon kind={k.kind} size={34} class="trophy__icon" />
+              <p class="trophy__count"><span class="trophy__x" aria-hidden="true">×</span><span data-kind-count={k.kind}>{kindCounts.get(k.kind)}</span></p>
+            </div>
+            <h3 class="trophy__name">{k.label}</h3>
+            <p class="trophy__blurb">{k.blurb}</p>
+          </li>
+        ))}
+      </ul>
     </div>
+  </section>
 
-    <div id="achievements-container" class="achievements-list">
+  <section class="section archive" aria-labelledby="archive-title">
+    <div class="wrap">
+      <div class="archive__head">
+        <p class="label label--gold">Event archive</p>
+        <h2 class="h2" id="archive-title">Every event <span class="outline">on record</span></h2>
       </div>
-  </main>
-</Layout>
 
-<script define:vars={{ achievementsData, firstYear }}>
-  document.addEventListener('DOMContentLoaded', () => {
-    const achievementsContainer = document.getElementById('achievements-container');
-    const yearSelectorLinks = document.querySelectorAll('.year-selector a');
-    const teamSelector = document.getElementById('team-selector');
+      <div class="empty" data-empty hidden>
+        <p class="empty__title display display--italic">Nothing on record</p>
+        <p class="mute">No team awards are recorded for this team in this season. That does not mean the team had no results, only that none are in our archive yet.</p>
+        <button type="button" class="btn btn--sm" data-reset>Show all awards</button>
+      </div>
 
-    function displayAchievements(year, teamFilter) {
-      const yearData = achievementsData[year];
-      let html = '';
-
-      if (yearData && yearData.competitions) {
-        yearData.competitions.forEach(comp => {
-          const filteredAwards = comp.awards.filter(award => teamFilter === 'all' || award.team === teamFilter);
-
-          if (filteredAwards.length > 0) {
-            const awardsHtml = filteredAwards.map(award => `
-              <div class="award-item" style="display: flex; align-items: center; gap: 0.75rem;">
-                <span class="award-badge">${award.award}</span>
-                <span class="team-name" style="color: var(--color-gold-faded); font-weight: 600;">- ${award.team}</span>
-              </div>
-            `).join('');
-
-            html += `
-              <li class="achievement-item">
-                <div>
-                  <p class="date">${comp.date}</p>
-                  <h3>${comp.name}</h3>
-                  <div class="achievement-awards">${awardsHtml}</div>
+      {groups.map((g) => (
+        <section class="sgroup" data-group={g.season} aria-labelledby={`sg-${g.season}`}>
+          <header class="sgroup__head">
+            <h3 class="sgroup__title" id={`sg-${g.season}`}>{g.label} <span>{g.game}</span></h3>
+            {g.note && <p class="label label--sm sgroup__note">{g.note}</p>}
+          </header>
+          <ol class="events">
+            {g.milestones.map((m) => (
+              <li class="event event--milestone" data-event data-season={g.season}>
+                <time class="event__date" datetime={m.date}>{formatRange(m.date, m.endDate)}</time>
+                <div class="event__body">
+                  <h4 class="event__name">{m.name}</h4>
+                  <p class="event__loc label label--sm">{m.location}</p>
+                  <ul class="awards">
+                    {m.teams.map((t) => (
+                      <li class="award" data-team={t} data-kind="milestone" data-milestone>
+                        <span class="award__icon chip chip--gold">Milestone</span>
+                        <span class="award__name">{m.summary}</span>
+                        <TeamId id={t} class="award__team" />
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <a href="${comp.eventUrl}" class="event-link-btn" target="_blank" rel="noopener noreferrer">Event Details</a>
+                <a class="event__link" href={eventUrl(m.eventCode)} target="_blank" rel="noopener noreferrer">
+                  Results <Icon name="arrow-up-right" size={14} /><span class="sr-only-sb"> for {m.name} (opens in a new tab)</span>
+                </a>
               </li>
-            `;
-          }
+            ))}
+            {g.events.map((e) => (
+              <li class="event" data-event data-season={g.season}>
+                <time class="event__date" datetime={e.date}>{formatDate(e.date)}</time>
+                <div class="event__body">
+                  <h4 class="event__name">{e.name}</h4>
+                  <p class="event__loc label label--sm">
+                    {e.location}
+                    {e.hosted && <span class="chip chip--gold event__hosted">Hosted by us</span>}
+                  </p>
+                  <ul class="awards">
+                    {e.awards.map((a) => (
+                      <li class="award" data-team={a.team} data-kind={awardKind(a.award)}>
+                        <AwardIcon kind={awardKind(a.award)} size={22} class="award__icon" />
+                        <span class="award__name">{a.award}</span>
+                        <TeamId id={a.team} class="award__team" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <a class="event__link" href={e.url} target="_blank" rel="noopener noreferrer">
+                  Results <Icon name="arrow-up-right" size={14} /><span class="sr-only-sb"> for {e.name} (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <ClosingCTA />
+
+  <script>
+    const state = { season: 'all', team: 'all' };
+    const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const rows = [...document.querySelectorAll<HTMLElement>('.award[data-team]')];
+    const eventsEls = [...document.querySelectorAll<HTMLElement>('[data-event]')];
+    const groups = [...document.querySelectorAll<HTMLElement>('[data-group]')];
+    const kindCounts = [...document.querySelectorAll<HTMLElement>('[data-kind-count]')];
+    const sum = (k: string) => document.querySelector<HTMLElement>(`[data-sum="${k}"]`);
+    const status = document.querySelector<HTMLElement>('[data-status]');
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    const seasonLabels: Record<string, string> = {};
+    buttons.filter((b) => b.dataset.filter === 'season').forEach((b) => (seasonLabels[b.dataset.value!] = b.textContent!.trim()));
+
+    function apply(updateUrl = true) {
+      let awardsN = 0;
+      let excellenceN = 0;
+      const teamSet = new Set<string>();
+      const kinds = new Map<string, number>();
+      let eventsN = 0;
+
+      eventsEls.forEach((ev) => {
+        const seasonOk = state.season === 'all' || ev.dataset.season === state.season;
+        let any = false;
+        ev.querySelectorAll<HTMLElement>('.award[data-team]').forEach((row) => {
+          const show = seasonOk && (state.team === 'all' || row.dataset.team === state.team);
+          row.hidden = !show;
+          if (!show) return;
+          any = true;
+          if (row.hasAttribute('data-milestone')) return; // milestones are not awards
+          awardsN++;
+          teamSet.add(row.dataset.team!);
+          kinds.set(row.dataset.kind!, (kinds.get(row.dataset.kind!) ?? 0) + 1);
+          if (row.dataset.kind === 'excellence') excellenceN++;
         });
+        ev.hidden = !any;
+        if (any && !ev.classList.contains('event--milestone')) eventsN++;
+      });
+      groups.forEach((g) => (g.hidden = !g.querySelector('[data-event]:not([hidden])')));
+
+      sum('awards')!.textContent = String(awardsN);
+      sum('events')!.textContent = String(eventsN);
+      sum('teams')!.textContent = String(teamSet.size);
+      sum('excellence')!.textContent = String(excellenceN);
+      kindCounts.forEach((el) => {
+        const n = kinds.get(el.dataset.kindCount!) ?? 0;
+        el.textContent = String(n);
+        el.closest('[data-kind-tile]')?.classList.toggle('is-zero', n === 0);
+      });
+
+      const scope = [
+        state.team === 'all' ? '' : state.team,
+        state.season === 'all' ? '' : seasonLabels[state.season],
+      ].filter(Boolean).join(', ');
+      if (status) {
+        status.textContent = `Showing ${awardsN} team ${awardsN === 1 ? 'award' : 'awards'} from ${eventsN} ${eventsN === 1 ? 'event' : 'events'}${scope ? ` · ${scope}` : ''}`;
       }
-      achievementsContainer.innerHTML = html || '<p style="text-align: center;">No achievements to display for this selection.</p>';
+      if (empty) empty.hidden = awardsN > 0 || eventsEls.some((e) => !e.hidden);
+
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.filter as 'season' | 'team'] === b.dataset.value)));
+
+      if (updateUrl) {
+        const url = new URL(location.href);
+        (['season', 'team'] as const).forEach((k) => (state[k] === 'all' ? url.searchParams.delete(k) : url.searchParams.set(k, state[k])));
+        history.replaceState(null, '', url);
+      }
     }
 
-    // --- Event Listeners ---
-    yearSelectorLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        yearSelectorLinks.forEach(l => l.classList.remove('active'));
-        e.target.classList.add('active');
-        const selectedYear = e.target.dataset.year;
-        const selectedTeam = teamSelector.value;
-        displayAchievements(selectedYear, selectedTeam);
-      });
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        state[b.dataset.filter as 'season' | 'team'] = b.dataset.value!;
+        apply();
+      }),
+    );
+    document.querySelector('[data-reset]')?.addEventListener('click', () => {
+      state.season = 'all';
+      state.team = 'all';
+      apply();
     });
 
-    teamSelector.addEventListener('change', () => {
-      const selectedYear = document.querySelector('.year-selector a.active').dataset.year;
-      const selectedTeam = teamSelector.value;
-      displayAchievements(selectedYear, selectedTeam);
-    });
+    const params = new URLSearchParams(location.search);
+    const valid = (k: 'season' | 'team', v: string | null) => !!v && buttons.some((b) => b.dataset.filter === k && b.dataset.value === v);
+    if (valid('season', params.get('season'))) state.season = params.get('season')!;
+    if (valid('team', params.get('team'))) state.team = params.get('team')!;
+    apply(false);
+  </script>
+</Layout>
 
-    // Initial load
-    displayAchievements(firstYear, 'all');
-  });
-</script>
+<style>
+  .filters {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 40;
+    background: rgb(10 10 11 / 0.93);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .filters__inner { display: flex; flex-wrap: wrap; gap: 0.75rem 2.5rem; padding-block: 0.75rem; }
+  .filters__group { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+  .filters__btns { display: flex; gap: 0.35rem; overflow-x: auto; scrollbar-width: none; padding-block: 2px; }
+  .fbtn {
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    background: transparent;
+    color: var(--color-paper);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast);
+  }
+  .fbtn--team { font-style: italic; font-weight: 800; }
+  .fbtn:hover { border-color: var(--color-gold); }
+  .fbtn[aria-pressed="true"] { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  @media (max-width: 767px) {
+    .filters { position: static; }
+    .filters__inner { padding-block: 1rem; gap: 1rem; }
+    .filters__group { width: 100%; align-items: flex-start; }
+    .filters__group > .label { width: 3.6rem; flex: none; padding-top: 0.95rem; }
+    .filters__btns { flex-wrap: wrap; overflow: visible; }
+    .fbtn { padding: 0 0.75rem; }
+    .trophy { padding: 1.1rem 1.1rem 1.3rem; gap: 0.5rem; }
+    .trophy__count { font-size: 2.75rem; }
+  }
+
+  .summary { padding-top: clamp(2.5rem, 5vw, 4rem); }
+  .summary__grid { margin: 1.25rem 0 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); }
+  @media (min-width: 900px) { .summary__grid { grid-template-columns: repeat(4, 1fr); } }
+  .sum { background: var(--color-ink); padding: 1.5rem 1.4rem 1.6rem; }
+  .sum dd { margin: 0.6rem 0 0; font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(3.75rem, 8vw, 6.5rem); line-height: 0.82; color: var(--color-gold); font-variant-numeric: tabular-nums; }
+  .summary__rule { margin-top: 1rem; color: var(--color-dim); max-width: 110ch; line-height: 1.7; }
+
+  .case__title { margin: clamp(3.5rem, 7vw, 5rem) 0 1.5rem; }
+  .case { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
+  .trophy {
+    position: relative;
+    padding: 1.5rem 1.4rem 1.75rem;
+    background: var(--color-coal);
+    border: 1px solid var(--color-line);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    transition: opacity var(--dur) ease, border-color var(--dur-fast);
+  }
+  .trophy:hover { border-color: rgb(255 188 0 / 0.4); }
+  .trophy__top { display: flex; align-items: center; justify-content: space-between; }
+  .trophy :global(.trophy__icon) { color: var(--color-gold); }
+  .trophy__count { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: 3.5rem; line-height: 0.8; font-variant-numeric: tabular-nums; }
+  .trophy__x { color: var(--color-gold); font-size: 0.55em; margin-right: 0.05em; vertical-align: 0.2em; }
+  .trophy__name { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; text-transform: uppercase; line-height: 1.05; }
+  .trophy__blurb { color: var(--color-mute); font-size: 0.925rem; line-height: 1.55; }
+  .trophy:global(.is-zero) { opacity: 0.35; }
+
+  .archive { border-top: 1px solid var(--color-line); padding-top: clamp(3.5rem, 7vw, 6rem); }
+  .archive__head .h2 { margin-top: 0.75rem; max-width: none; }
+
+  .empty { margin-top: 3rem; padding: 2.5rem; border: 1px dashed var(--color-line-strong); display: grid; gap: 1rem; justify-items: start; }
+  .empty__title { font-size: clamp(2.5rem, 5vw, 3.5rem); }
+
+  .sgroup { margin-top: clamp(3rem, 6vw, 4.5rem); }
+  .sgroup__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-gold); }
+  .sgroup__title { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(2.25rem, 4.5vw, 3.5rem); text-transform: uppercase; line-height: 0.9; }
+  .sgroup__title span { color: var(--color-gold); }
+  .sgroup__note { color: var(--color-dim); }
+
+  .events { list-style: none; margin: 0; padding: 0; }
+  .event {
+    display: grid;
+    gap: 0.75rem 2rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 900px) { .event { grid-template-columns: 11rem 1fr auto; align-items: start; } }
+  .event__date { font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-gold); padding-top: 0.35rem; }
+  .event__name { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.4rem, 2.3vw, 1.9rem); text-transform: uppercase; line-height: 1.05; }
+  .event__loc { margin-top: 0.5rem; color: var(--color-dim); display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .awards { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+  .award { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.85rem; padding: 0.6rem 0.9rem; background: var(--color-coal); border: 1px solid var(--color-line); max-width: 40rem; }
+  .award :global(.award__icon) { color: var(--color-gold); }
+  .award__name { font-size: 0.99rem; }
+  .award :global(.award__team) { font-size: 1.4rem; }
+  .event--milestone .award { background: rgb(255 188 0 / 0.08); border-color: rgb(255 188 0 / 0.35); }
+  .event__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    justify-self: start;
+    transition: border-color var(--dur-fast), color var(--dur-fast), background-color var(--dur-fast);
+  }
+  .event__link:hover, .event__link:focus-visible { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+</style>

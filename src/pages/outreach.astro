@@ -1,22 +1,128 @@
 ---
+import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
+import girlPoweredPhoto from '../assets/photos/girl-powered-workshop.png';
+import { mailto, site } from '../data/site';
+
+const steps = [
+  { title: 'Learn the process', text: 'Our members introduce the engineering design process, the same approach our teams use to plan and improve their robots.' },
+  { title: 'Make it your own', text: 'Students create their own designs and are encouraged to add their own interpretations to them.' },
+  { title: 'Build a bottle car', text: 'Participants build a car from a plastic bottle, putting the design process into practice.' },
+];
 ---
-<Layout title="Community Outreach | SBHS Robotics 750">
-     <div class="container">
-        <header class="page-header">
-            <h1 class="text-glow-gold">Community Outreach</h1>
-        </header>
-         <div class="about-grid">
-            <img src="/girlpowered.png" alt="Team at a community event" style="border-radius: 0.5rem;"/>
-            <div>
-                <h2 class="text-gradient-gold">Girl Powered</h2>
-                <p>Every year we organize the Girl Powered event at our local middle schools, with a turnout of around 30 to 50 aspiring young students</p>
-                <ul style="list-style-position: inside; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <li>Introduced students to the design process and ran a fun bottle car activity to implement the process</li>
-                    <li>Girls from South Brunswick middle schools were encouraged to create designs, make interpretations within their designs and build a plastic bottled car.
-                    </li>
-                </ul>
-            </div>
+<Layout title="Outreach" description="South Brunswick Robotics runs a yearly Girl Powered workshop for girls from South Brunswick middle schools, built around the engineering design process and a bottle-car build.">
+  <PageHero
+    index="05"
+    label="Outreach"
+    lines={[{ text: 'Girl', style: 'outline' }, { text: 'Powered', style: 'gold' }]}
+    intro="Every year our members organize a Girl Powered event for girls from South Brunswick middle schools. Turnout is usually around 30 to 50 students."
+    meta={[
+      { k: 'Who', v: 'Middle school girls' },
+      { k: 'Turnout', v: '~30–50 students' },
+      { k: 'Build', v: 'Bottle cars' },
+    ]}
+    ghost="GP"
+  />
+
+  <section class="photo-band" aria-label="Girl Powered workshop photo">
+    <div class="wrap">
+      <figure>
+        <div class="frame band__frame" data-reveal="mask">
+          <Picture
+            src={girlPoweredPhoto}
+            formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+            widths={[480, 736]}
+            sizes="(min-width: 1100px) 736px, 92vw"
+            alt="Middle school students working on designs at tables in a school library during a Girl Powered workshop, with slides projected at the front of the room."
+          />
         </div>
+        <figcaption class="caption">Girl Powered workshop at a South Brunswick middle school library</figcaption>
+      </figure>
+      <div class="band__copy">
+        <p class="label label--gold" data-reveal="fade">Why we do it</p>
+        <p class="band__quote display display--italic" data-reveal>
+          Engineering starts with a <span class="gold">process</span>, not a kit.
+        </p>
+        <p class="mute" data-reveal style="--d:1">
+          Girl Powered is a VEX Robotics and REC Foundation initiative that encourages girls to explore STEM. Our event is hands-on: an introduction to the design process, followed by a bottle-car design challenge.
+        </p>
+      </div>
     </div>
+  </section>
+
+  <section class="section steps" aria-labelledby="steps-title">
+    <div class="wrap">
+      <SectionHead num="01" label="What participants do" id="steps-title" title={`Three steps, <span class="gold">one car each.</span>`} />
+      <ol class="step-list">
+        {steps.map((s, i) => (
+          <li class="step" data-reveal style={`--d:${i}`}>
+            <span class="step__num display display--italic outline" aria-hidden="true">0{i + 1}</span>
+            <h3 class="step__title">{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section learned" aria-labelledby="learned-title">
+    <div class="wrap learned__grid">
+      <SectionHead num="02" label="What they take away" id="learned-title" title={`Ideas, then <span class="gold">iteration.</span>`} />
+      <div class="prose-sb" data-reveal style="--d:1">
+        <p>
+          The bottle car is a small version of what our teams do all season: start with a goal, design a solution, build it, and look for ways to make it better.
+        </p>
+        <p>
+          Participants leave having used the design process themselves, not just heard about it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section partner" aria-labelledby="partner-title">
+    <div class="wrap partner__inner">
+      <p class="label label--gold" data-reveal="fade">Work with us</p>
+      <h2 class="h2" id="partner-title" data-reveal>Bring a workshop <span class="outline">to your group</span></h2>
+      <p class="mute" data-reveal style="--d:1">
+        Teachers, schools, and community groups interested in outreach with South Brunswick Robotics can reach the team by email.
+      </p>
+      <a class="btn btn--gold" href={mailto('Outreach with SB Robotics')} data-reveal style="--d:2">
+        <Icon name="mail" size={18} /> Email {site.email}
+      </a>
+    </div>
+  </section>
+
+  <ClosingCTA />
 </Layout>
+
+<style>
+  .photo-band { padding-block: clamp(3.5rem, 7vw, 6rem); }
+  .photo-band .wrap { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 1100px) { .photo-band .wrap { grid-template-columns: 736px 1fr; gap: 4.5rem; } }
+  .band__frame { aspect-ratio: 736 / 422; }
+  .band__frame :global(picture) { display: block; height: 100%; }
+  .band__copy { display: grid; gap: 1.25rem; }
+  .band__quote { font-size: clamp(2.5rem, 4.6vw, 4.25rem); line-height: 0.92; }
+
+  .steps { background: var(--color-coal); border-block: 1px solid var(--color-line); }
+  .step-list { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; gap: 2.5rem; }
+  @media (min-width: 900px) { .step-list { grid-template-columns: repeat(3, 1fr); gap: 0; } }
+  .step { display: grid; gap: 1rem; align-content: start; padding-top: 1.5rem; border-top: 1px solid var(--color-line-strong); }
+  @media (min-width: 900px) { .step { padding: 1.5rem 2rem 0; } .step:first-child { padding-left: 0; } .step + .step { border-left: 1px solid var(--color-line); } }
+  .step__num { font-size: clamp(5rem, 9vw, 8rem); line-height: 0.8; }
+  .step__title { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(1.9rem, 3vw, 2.5rem); text-transform: uppercase; line-height: 0.95; }
+  .step p { color: var(--color-mute); max-width: 34ch; }
+
+  .learned__grid { display: grid; gap: 2rem 4rem; align-items: end; }
+  @media (min-width: 1024px) { .learned__grid { grid-template-columns: 7fr 5fr; } }
+
+  .partner { border-top: 1px solid var(--color-line); }
+  .partner__inner { display: grid; gap: 1.25rem; justify-items: start; max-width: 60rem; }
+  .partner .h2 { max-width: none; }
+  .partner .btn { text-transform: none; letter-spacing: 0.02em; }
+</style>

@@ -1,38 +1,145 @@
 ---
-const usefulLinks = [
-    { name: "VEX Robotics", href: "https://www.vexrobotics.com/"},
-    { name: "Robot Events", href: "https://www.robotevents.com/"},
-];
-const orgLinks = [
-    { name: "Roster", href: "/roster" },
-    { name: "Achievements", href: "/achievements" },
-];
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/sb-robotics-logo.png';
+import Icon from './Icon.astro';
+import { nav, site, externalLinks, mailto } from '../data/site';
+
+const year = new Date().getFullYear();
+const explore = [{ label: 'Home', href: '/' }, ...nav, { label: 'Contact', href: '/contact' }];
 ---
 <footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h3>South Brunswick Robotics</h3>
-        <p>750 Ridge Road<br/>Monmouth Junction, NJ 08852</p>
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__id">
+        <a href="/" class="footer__logo" aria-label={`${site.name}, home`}>
+          <Image src={logo} alt="" width={88} height={88} densities={[1, 2]} />
+        </a>
+        <p class="footer__blurb">
+          The VEX V5 robotics program at {site.school}. Students design, build, program, and compete as the 750 teams.
+        </p>
       </div>
-      <div>
-        <h3>Useful Links</h3>
+
+      <nav aria-label="Footer" class="footer__col">
+        <h2 class="label label--gold">Explore</h2>
         <ul>
-          {usefulLinks.map(link => <li><a href={link.href} target="_blank" rel="noopener noreferrer">{link.name}</a></li>)}
+          {explore.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="label label--gold">Find us</h2>
+        <address>
+          {site.school}<br />
+          {site.address.street}<br />
+          {site.address.city}, {site.address.state} {site.address.zip}
+        </address>
+        <a class="footer__mail" href={mailto()}>
+          <Icon name="mail" size={16} />
+          {site.email}
+        </a>
+      </div>
+
+      <div class="footer__col">
+        <h2 class="label label--gold">VEX links</h2>
+        <ul>
+          {externalLinks.map((l) => (
+            <li>
+              <a href={l.href} target="_blank" rel="noopener noreferrer">
+                {l.label}
+                <Icon name="arrow-up-right" size={14} />
+                <span class="sr-only-sb">(opens in a new tab)</span>
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
-      <div>
-        <h3>Organization</h3>
-        <ul>
-          {orgLinks.map(link => <li><a href={link.href}>{link.name}</a></li>)}
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; {new Date().getFullYear()} South Brunswick Robotics. All Rights Reserved.</p>
-      <p style="margin-top: 0.25rem;">
-        Website by <a href="https://samuel-asefa.github.io" target="_blank" rel="noopener noreferrer" style="color: var(--color-gold); text-decoration: underline;">Sammy</a>
-      </p>
     </div>
   </div>
+
+  <div class="footer__mark" aria-hidden="true">
+    <span class="display display--italic outline">South Brunswick</span>
+    <span class="display display--italic">750</span>
+  </div>
+
+  <div class="wrap footer__base">
+    <p>© {year} {site.name}</p>
+    <p>
+      Website by <a href={site.credit.href} target="_blank" rel="noopener noreferrer">{site.credit.name}</a>
+    </p>
+  </div>
 </footer>
+
+<style>
+  .footer {
+    position: relative;
+    border-top: 1px solid var(--color-line);
+    padding-top: clamp(4rem, 8vw, 6rem);
+    background: var(--color-ink);
+    overflow: hidden;
+  }
+  .footer__grid {
+    display: grid;
+    gap: 3rem 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .footer__grid { grid-template-columns: 1fr 1fr; }
+    .footer__id { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1024px) {
+    .footer__grid { grid-template-columns: 1.6fr 1fr 1.2fr 1fr; }
+    .footer__id { grid-column: auto; }
+  }
+  .footer__logo { display: inline-block; }
+  .footer__logo :global(img) { width: 88px; height: 88px; border-radius: 50%; }
+  .footer__blurb { margin-top: 1.25rem; max-width: 34ch; color: var(--color-mute); font-size: 0.975rem; }
+  .footer__col h2 { margin-bottom: 1.1rem; }
+  .footer__col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.1rem; }
+  .footer__col a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 40px;
+    color: var(--color-paper);
+    font-size: 0.975rem;
+    transition: color var(--dur-fast) ease;
+  }
+  .footer__col a:hover, .footer__col a:focus-visible { color: var(--color-gold); }
+  address { font-style: normal; color: var(--color-mute); font-size: 0.975rem; line-height: 1.6; }
+  .footer__mail { margin-top: 0.75rem; }
+
+  .footer__mark {
+    margin-top: clamp(3.5rem, 8vw, 6rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2vw;
+    padding-inline: var(--gutter);
+    font-size: clamp(3.4rem, 10.6vw, 11rem);
+    line-height: 0.78;
+    white-space: nowrap;
+    user-select: none;
+    margin-bottom: -0.06em;
+  }
+  .footer__mark span:last-child { color: var(--color-gold); }
+
+  .footer__base {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.4rem 1.8rem;
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-dim);
+  }
+  .footer__base a { color: var(--color-mute); text-decoration: underline; text-decoration-color: var(--color-gold); text-underline-offset: 0.25em; display: inline-block; padding-block: 0.6rem; margin-block: -0.6rem; }
+  .footer__base a:hover { color: var(--color-gold); }
+  @media (max-width: 639px) {
+    .footer__mark { flex-direction: column; align-items: flex-start; gap: 0.1em; }
+  }
+</style>

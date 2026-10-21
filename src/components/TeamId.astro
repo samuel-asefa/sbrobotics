@@ -1,0 +1,8 @@
+---
+// "750B" with the team letter in gold.
+interface Props { id: string; class?: string; tag?: 'span' | 'strong' | 'h2' | 'h3' | 'p' }
+const { id, class: cls, tag: Tag = 'span' } = Astro.props;
+const num = id.match(/^\d+/)?.[0] ?? '';
+const letter = id.slice(num.length);
+---
+<Tag class:list={['team-id', cls]}>{num}<b>{letter}</b></Tag>

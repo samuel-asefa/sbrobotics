@@ -1,214 +1,455 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import rosterData from '../data/roster.json';
-import achievementsData from '../data/achievements.json';
+import PageHero from '../components/PageHero.astro';
+import TeamId from '../components/TeamId.astro';
+import Icon from '../components/Icon.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
+import {
+  allAwards,
+  initials,
+  isPartialRoster,
+  latestRosterSeason,
+  memberCount,
+  memberHistory,
+  officers,
+  pad2,
+  rosterNote,
+  rosterSeasons,
+  seasonGame,
+  seasonLabel,
+  teamName,
+  seasonLeadership,
+  teamsForSeason,
+} from '../lib/data';
 
-const years = Object.keys(rosterData).sort((a, b) => b.localeCompare(a));
+// The school year the site is built in: Jun 2026 – May 2027 is season "2027".
+const now = new Date();
+const currentSeason = String(now.getMonth() >= 5 ? now.getFullYear() + 1 : now.getFullYear());
+
+const seasons = rosterSeasons.map((s) => ({
+  key: s,
+  label: seasonLabel(s),
+  game: seasonGame(s),
+  teams: teamsForSeason(s),
+  members: memberCount(s),
+  officers: officers(s),
+  partial: isPartialRoster(s),
+  note: rosterNote(s),
+  status: s === currentSeason && !isPartialRoster(s) ? 'Current season' : isPartialRoster(s) ? 'Leadership only' : s === latestRosterSeason ? 'Most recent roster' : 'Archived roster',
+}));
+
+// Data for the member dialog, computed at build time.
+const awards = allAwards();
+const people: Record<string, { season: string; label: string; team: string; role: string }[]> = {};
+const names = seasons.flatMap((s) => [...s.teams.flatMap((t) => t.members), ...seasonLeadership(s.key)].map((m) => m.name));
+for (const name of names) {
+  people[name] ??= memberHistory(name).map((h) => ({ ...h, label: seasonLabel(h.season) }));
+}
+const teamAwards: Record<string, { award: string; event: string; date: string }[]> = {};
+for (const a of awards) {
+  (teamAwards[`${a.season}|${a.team}`] ??= []).push({ award: a.award, event: a.eventName, date: a.date });
+}
+const awardCountFor = (season: string, team: string) => teamAwards[`${season}|${team}`]?.length ?? 0;
+const dialogData = JSON.stringify({ people, teamAwards });
 ---
+<Layout title="Roster" description="South Brunswick Robotics team rosters by season: every member of 750B, 750C, 750E, 750R, 750S, and 750W, with roles and team awards.">
+  <PageHero
+    index="02"
+    label="Roster"
+    lines={[{ text: 'The', style: 'outline' }, { text: 'Roster' }]}
+    intro={`Every member by team and season, starting with the ${seasonLabel(latestRosterSeason)} ${seasonGame(latestRosterSeason)} roster. Earlier seasons stay available as an archive. Select a name to see that person’s seasons and team awards.`}
+    meta={[
+      { k: 'Latest roster', v: seasonLabel(latestRosterSeason) },
+      { k: 'Students listed', v: String(memberCount(latestRosterSeason)) },
+      { k: 'Teams', v: String(teamsForSeason(latestRosterSeason).length) },
+    ]}
+  />
 
-<Layout title="Roster | VEX Robotics">
-  <main class="container">
-    <div class="page-header">
-        <h1 class="text-gradient-gold text-glow-gold">Team Roster</h1>
-        <div class="year-selector">
-            {years.map((year, index) => {
-                const season = `${parseInt(year) - 1}-${year.slice(2)}`;
-                return <a href="#" class:list={["year-link", { active: index === 0 }]} data-target-id={year}>{season}</a>
-            })}
-        </div>
-    </div>
-
-    {years.map((year, index) => (
-        <div id={year} class:list={["year-content", { hidden: index !== 0 }]}>
-            {Object.entries(rosterData[year]).map(([division, teams]) => (
-                <div class="division-section">
-                    <h2 class="division-title">{division}</h2>
-                    <div class="roster-grid">
-                        {Object.entries(teams).map(([teamId, teamData]) => (
-                            <div class="team-card">
-                                <h3>{teamId}</h3>
-                                <ul>
-                                    {teamData.members.map(member => (
-                                        <li>
-                                            {/* We only need the member's name here to trigger the lookup */}
-                                            <span class="member-name" data-member-name={member.name} data-year={year}>
-                                                {member.name}
-                                            </span>
-                                            <div class="member-role">{member.role}</div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
-    ))}
-  </main>
-
-  <div id="member-modal-overlay" class="modal-overlay hidden">
-    <div class="modal-content">
-      <button id="modal-close-btn" class="modal-close-btn">&times;</button>
-      <div id="modal-header">
-        <h2 id="modal-member-name"></h2>
-        <div id="modal-role-pills" class="role-pills"></div>
-      </div>
-      <div id="modal-body">
-        <h4>Personal Awards Accrued</h4>
-        <ul id="modal-awards-list"></ul>
+  <div class="season-bar" data-season-bar>
+    <div class="wrap season-bar__inner">
+      <p class="label season-bar__label" id="season-picker-label">Season</p>
+      <div class="season-tabs" role="group" aria-labelledby="season-picker-label">
+        {seasons.map((s, i) => (
+          <a class="season-tab" href={`#season-${s.key}`} data-season={s.key} aria-current={i === 0 ? 'true' : undefined}>
+            <span class="season-tab__year">{s.label}</span>
+            <span class="season-tab__game">{s.game}</span>
+          </a>
+        ))}
       </div>
     </div>
   </div>
+
+  {seasons.map((s, i) => (
+    <section class="season" id={`season-${s.key}`} data-season-panel={s.key} aria-labelledby={`season-${s.key}-title`}>
+      <div class="wrap">
+        <header class="season__head">
+          <div>
+            <p class="label label--gold">{s.status}</p>
+            <h2 class="h2 season__title" id={`season-${s.key}-title`}>{s.label} <span class="outline">{s.game}</span></h2>
+          </div>
+          <dl class="season__stats">
+            <div><dt class="label label--sm">{s.partial ? 'Leaders listed' : 'Students listed'}</dt><dd>{s.partial ? s.members + seasonLeadership(s.key).length : s.members}</dd></div>
+            <div><dt class="label label--sm">Teams</dt><dd>{s.teams.length}</dd></div>
+          </dl>
+        </header>
+
+        {s.note && <p class="season__note">{s.note}</p>}
+
+        {s.officers.length > 0 && (
+          <div class="officers">
+            <p class="label">Club leadership</p>
+            <ul>
+              {s.officers.map((o) => (
+                <li>
+                  <button type="button" class="officer" data-member={o.name} aria-haspopup="dialog">
+                    <strong>{o.name}</strong>
+                    <span class="label label--sm">{o.role}{o.team && ` · ${o.team}`}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <nav class="jump" aria-label={`Jump to a ${s.label} team`}>
+          {s.teams.map((t) => (
+            <a href={`#team-${s.key}-${t.id}`}><TeamId id={t.id} /></a>
+          ))}
+        </nav>
+
+        {s.teams.map((t) => {
+          const name = teamName(s.key, t.id);
+          const count = awardCountFor(s.key, t.id);
+          return (
+            <article class="team" id={`team-${s.key}-${t.id}`} aria-labelledby={`team-${s.key}-${t.id}-title`}>
+              <header class="team__head">
+                <h3 class="team__id" id={`team-${s.key}-${t.id}-title`}>
+                  <TeamId id={t.id} />
+                  <span class="sr-only-sb">, {s.label}</span>
+                </h3>
+                <div class="team__meta">
+                  {name && <p class="team__name">“{name}”</p>}
+                  <p class="label label--sm">
+                    {t.members.length} {s.partial ? (t.members.length === 1 ? 'leader' : 'leaders') : 'members'}
+                    {count > 0 && ` · ${count} team ${count === 1 ? 'award' : 'awards'} on record in ${s.label}`}
+                  </p>
+                </div>
+              </header>
+              <ul class="members">
+                {t.members.map((m, idx) => (
+                  <li>
+                    <button
+                      type="button"
+                      class:list={['member', m.role !== 'Member' && 'member--lead']}
+                      data-member={m.name}
+                      data-season={s.key}
+                      aria-haspopup="dialog"
+                    >
+                      <span class="member__num" aria-hidden="true">{pad2(idx + 1)}</span>
+                      <span class="member__mono" aria-hidden="true">{initials(m.name)}</span>
+                      <span class="member__name">{m.name}</span>
+                      <span class="member__role">{m.role}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  ))}
+
+  <dialog class="mdl" id="member-dialog" aria-labelledby="mdl-name">
+    <div class="mdl__panel">
+      <button class="mdl__close" type="button" data-close aria-label="Close member details">
+        <Icon name="close" size={20} />
+      </button>
+      <p class="label label--gold">Member</p>
+      <h2 class="mdl__name" id="mdl-name"></h2>
+      <section class="mdl__sec">
+        <h3 class="label">Seasons on the roster</h3>
+        <ul class="mdl__history" data-history></ul>
+      </section>
+      <section class="mdl__sec">
+        <h3 class="label">Team awards during these seasons</h3>
+        <p class="mdl__note">Awards are earned by the whole team, not by an individual.</p>
+        <ul class="mdl__awards" data-awards></ul>
+      </section>
+    </div>
+  </dialog>
+
+  <ClosingCTA />
+
+<script is:inline type="application/json" id="roster-data" set:html={dialogData}></script>
+
+<script>
+  type Hist = { season: string; label: string; team: string; role: string };
+  type Aw = { award: string; event: string; date: string };
+  const raw = document.getElementById('roster-data')?.textContent ?? '{}';
+  const data = JSON.parse(raw) as { people: Record<string, Hist[]>; teamAwards: Record<string, Aw[]> };
+
+  /* ---------- Season switching (progressive enhancement) ---------- */
+  const tabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-season]')].filter((a) => a.matches('.season-tab'));
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-season-panel]')];
+  const valid = new Set(panels.map((p) => p.dataset.seasonPanel));
+
+  function show(season: string, updateUrl = true) {
+    if (!valid.has(season)) return;
+    panels.forEach((p) => (p.hidden = p.dataset.seasonPanel !== season));
+    tabs.forEach((t) => (t.dataset.season === season ? t.setAttribute('aria-current', 'true') : t.removeAttribute('aria-current')));
+    if (updateUrl) {
+      const url = new URL(location.href);
+      url.searchParams.set('season', season);
+      url.hash = '';
+      history.replaceState(null, '', url);
+    }
+  }
+
+  tabs.forEach((t) =>
+    t.addEventListener('click', (e) => {
+      e.preventDefault();
+      show(t.dataset.season!);
+    }),
+  );
+
+  const params = new URLSearchParams(location.search);
+  const hashSeason = location.hash.match(/^#(?:season|team)-(\d{4})/)?.[1];
+  const initial = params.get('season') ?? hashSeason ?? panels[0]?.dataset.seasonPanel ?? '';
+  show(valid.has(initial) ? initial : panels[0].dataset.seasonPanel!, false);
+  if (location.hash) {
+    // The target may sit in a panel that was hidden until now, so scroll explicitly.
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    target?.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
+  }
+
+  /* ---------- Member dialog (one delegated listener) ---------- */
+  const dlg = document.getElementById('member-dialog') as HTMLDialogElement;
+  const nameEl = dlg.querySelector('#mdl-name')!;
+  const histEl = dlg.querySelector('[data-history]')!;
+  const awEl = dlg.querySelector('[data-awards]')!;
+  let opener: HTMLElement | null = null;
+
+  const fmt = (iso: string) =>
+    new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso + 'T12:00:00Z'));
+  const el = (tag: string, cls: string, text: string) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    n.textContent = text;
+    return n;
+  };
+
+  function openMember(btn: HTMLElement) {
+    const name = btn.dataset.member!;
+    const hist = data.people[name] ?? [];
+    nameEl.textContent = name;
+    histEl.replaceChildren(
+      ...hist.map((h) => {
+        const li = document.createElement('li');
+        li.append(el('span', 'mdl__season', h.label), el('span', 'mdl__team', h.team || 'Club'), el('span', 'mdl__role', h.role));
+        return li;
+      }),
+    );
+    const rows = hist.filter((h) => h.team).flatMap((h) => (data.teamAwards[`${h.season}|${h.team}`] ?? []).map((a) => ({ ...a, team: h.team, label: h.label })));
+    rows.sort((a, b) => b.date.localeCompare(a.date));
+    awEl.replaceChildren(
+      ...(rows.length
+        ? rows.map((r) => {
+            const li = document.createElement('li');
+            li.append(el('span', 'mdl__award', r.award), el('span', 'mdl__team', r.team), el('span', 'mdl__event', `${r.event} · ${fmt(r.date)}`));
+            return li;
+          })
+        : [el('li', 'mdl__empty', 'No team awards on record for these seasons.')]),
+    );
+    opener = btn;
+    dlg.showModal();
+    document.documentElement.classList.add('menu-open');
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-member]');
+    if (btn) openMember(btn);
+  });
+  dlg.querySelector('[data-close]')!.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => {
+    if (e.target === dlg) dlg.close(); // backdrop click
+  });
+  dlg.addEventListener('close', () => {
+    document.documentElement.classList.remove('menu-open');
+    opener?.focus();
+  });
+</script>
 </Layout>
 
+
 <style>
-  /* Styles are unchanged and included for completeness */
-  .member-name { cursor: pointer; }
-  .year-content.hidden { display: none; }
-  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
-  .modal-overlay.hidden { display: none; }
-  .modal-content { background-color: var(--color-gray-dark); color: var(--color-white); padding: 2rem; border-radius: 0.75rem; border: 1px solid var(--color-gray-medium); box-shadow: 0 0 30px var(--shadow-color-1); width: 90%; max-width: 500px; position: relative; }
-  #modal-header { text-align: center; border-bottom: 1px solid var(--color-gray-medium); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
-  #modal-member-name { font-size: 2rem; color: var(--color-white); margin-bottom: 1rem; }
-  .role-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; }
-  .role-pill { background-color: #78350f50; color: var(--color-gold-faded); padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
-  #modal-body h4 { text-align: center; color: var(--color-gold); margin-bottom: 1rem; font-size: 1.25rem; }
-  #modal-awards-list { list-style: none; padding: 0; }
-  #modal-awards-list li { background-color: rgba(31, 41, 55, 0.5); padding: 0.75rem 1rem; border-radius: 0.25rem; margin-bottom: 0.5rem; }
-  .modal-close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--color-gray-light); font-size: 2rem; cursor: pointer; line-height: 1; }
-  .modal-close-btn:hover { color: var(--color-white); }
+  .season-bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 40;
+    background: rgb(10 10 11 / 0.92);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .season-bar__inner { display: flex; align-items: center; gap: 1.5rem; padding-block: 0.75rem; }
+  .season-bar__label { display: none; }
+  @media (min-width: 640px) { .season-bar__label { display: block; } }
+  .season-tabs { display: flex; gap: 0.5rem; overflow-x: auto; scrollbar-width: none; }
+  .season-tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--color-line-strong);
+    transition: border-color var(--dur-fast), background-color var(--dur-fast), color var(--dur-fast);
+    white-space: nowrap;
+  }
+  .season-tab__year { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; line-height: 1; }
+  .season-tab__game { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-mute); margin-top: 0.25rem; }
+  .season-tab:hover { border-color: var(--color-gold); }
+  .season-tab[aria-current="true"] { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  .season-tab[aria-current="true"] .season-tab__game { color: rgb(10 10 11 / 0.7); }
+
+  .season { padding-block: clamp(3.5rem, 7vw, 6rem); scroll-margin-top: calc(var(--header-h) + 80px); }
+  .season + .season { border-top: 1px solid var(--color-line); }
+  .season__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 2rem; }
+  .season__title { margin-top: 0.75rem; max-width: none; }
+  .season__stats { display: flex; gap: 2.5rem; margin: 0; }
+  .season__stats dd { margin: 0.3rem 0 0; font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: 3.25rem; line-height: 0.85; color: var(--color-gold); }
+
+  .officers { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline; padding: 1.25rem 0; border-block: 1px solid var(--color-line); }
+  .officers ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; }
+  .officer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .officers strong { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; transition: color var(--dur-fast); }
+  .officer:hover strong, .officer:focus-visible strong { color: var(--color-gold); }
+  .season__note {
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.1rem;
+    border-left: 3px solid var(--color-gold);
+    background: var(--color-coal);
+    color: var(--color-mute);
+    font-size: 0.95rem;
+    max-width: 62ch;
+  }
+
+  .jump { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .jump a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.9rem; border: 1px solid var(--color-line); font-size: 1.25rem; transition: border-color var(--dur-fast), background-color var(--dur-fast); }
+  .jump a:hover { border-color: var(--color-gold); background: var(--color-coal); }
+
+  .team { margin-top: clamp(3rem, 6vw, 4.5rem); scroll-margin-top: calc(var(--header-h) + 90px); }
+  .team__head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--color-line-strong); }
+  .team__id :global(.team-id) { font-size: clamp(4.5rem, 10vw, 8rem); display: block; }
+  .team__meta { padding-bottom: 0.6rem; display: grid; gap: 0.35rem; }
+  .team__name { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; text-transform: uppercase; line-height: 1; }
+
+  .members {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    border-left: 1px solid var(--color-line);
+  }
+  .members li { border-right: 1px solid var(--color-line); border-bottom: 1px solid var(--color-line); display: flex; }
+  .member {
+    position: relative;
+    flex: 1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 1rem;
+    align-items: center;
+    padding: 1.15rem 1.15rem 1.15rem 1rem;
+    min-height: 84px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--dur-fast);
+  }
+  .member:hover, .member:focus-visible { background: var(--color-coal); }
+  .member:focus-visible { outline-offset: -3px; }
+  .member__num { position: absolute; top: 0.6rem; right: 0.75rem; font-family: var(--font-mono); font-size: 0.625rem; color: var(--color-dim); letter-spacing: 0.1em; }
+  .member__mono {
+    grid-row: span 2;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--color-mute);
+    transition: border-color var(--dur-fast), color var(--dur-fast), background-color var(--dur-fast);
+  }
+  .member:hover .member__mono, .member:focus-visible .member__mono { border-color: var(--color-gold); color: var(--color-gold); }
+  .member--lead .member__mono { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); }
+  .member__name { font-weight: 500; font-size: 1.02rem; line-height: 1.25; padding-right: 1.5rem; }
+  @media (max-width: 639px) {
+    .member { min-height: 64px; padding: 0.7rem 0.9rem 0.7rem 0.85rem; column-gap: 0.85rem; }
+    .member__mono { width: 38px; height: 38px; font-size: 0.9rem; }
+    .member__num { top: 0.5rem; }
+  }
+  .member__role { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-dim); }
+  .member--lead .member__role { color: var(--color-gold); }
+
+  /* Dialog */
+  .mdl {
+    width: min(560px, calc(100% - 2rem));
+    max-height: calc(100% - 2rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-coal);
+    color: var(--color-paper);
+  }
+  .mdl::backdrop { background: rgb(5 5 6 / 0.78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .mdl[open] { animation: mdl-in 420ms var(--ease-out-expo); }
+  @keyframes mdl-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+  .mdl__panel { position: relative; padding: 2rem 1.75rem 2rem; border-top: 3px solid var(--color-gold); }
+  .mdl__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 50%;
+    background: none;
+    color: var(--color-paper);
+    cursor: pointer;
+  }
+  .mdl__close:hover { border-color: var(--color-gold); color: var(--color-gold); }
+  .mdl__name { margin-top: 0.75rem; padding-right: 3rem; font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(2.2rem, 7vw, 3.25rem); text-transform: uppercase; line-height: 0.92; }
+  .mdl__sec { margin-top: 1.75rem; }
+  .mdl__sec h3 { margin-bottom: 0.75rem; }
+  .mdl__note { font-size: 0.9rem; color: var(--color-mute); margin-bottom: 0.75rem; }
+  .mdl ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-line); }
+  .mdl :global(li) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.9rem; padding: 0.75rem 0; border-bottom: 1px solid var(--color-line); }
+  .mdl :global(.mdl__season), .mdl :global(.mdl__award) { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; }
+  .mdl :global(.mdl__team) { font-family: var(--font-display); font-weight: 800; font-style: italic; color: var(--color-gold); font-size: 1.2rem; }
+  .mdl :global(.mdl__role) { margin-left: auto; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-mute); }
+  .mdl :global(.mdl__event) { flex-basis: 100%; font-size: 0.875rem; color: var(--color-dim); }
+  .mdl :global(.mdl__empty) { color: var(--color-mute); }
 </style>
-
-<script define:vars={{ rosterData, achievementsData }}>
-document.addEventListener('DOMContentLoaded', function() {
-    const modalOverlay = document.getElementById('member-modal-overlay');
-    const modalName = document.getElementById('modal-member-name');
-    const modalPills = document.getElementById('modal-role-pills');
-    const modalAwards = document.getElementById('modal-awards-list');
-    const closeBtn = document.getElementById('modal-close-btn');
-
-    const yearLinks = document.querySelectorAll('.year-selector .year-link');
-    const yearContents = document.querySelectorAll('.year-content');
-
-    yearLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.dataset.targetId;
-            yearLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            yearContents.forEach(content => content.classList.toggle('hidden', content.id !== targetId));
-            bindClickListeners();
-        });
-    });
-    
-    /**
-     * NEW: Finds every team and year a specific member has participated in.
-     * @param {string} memberName - The name of the member to search for.
-     * @returns {Array<Object>} - A list of objects, e.g., [{year, teamId, role}, ...].
-     */
-    function getMemberParticipationHistory(memberName) {
-        const history = [];
-        for (const [year, divisions] of Object.entries(rosterData)) {
-            for (const [division, teams] of Object.entries(divisions)) {
-                for (const [teamId, teamData] of Object.entries(teams)) {
-                    const foundMember = teamData.members.find(m => m.name === memberName);
-                    if (foundMember) {
-                        history.push({ year, teamId, role: foundMember.role });
-                    }
-                }
-            }
-        }
-        return history.sort((a,b) => b.year.localeCompare(a.year)); // Sort by most recent year
-    }
-
-    /**
-     * NEW: Calculates cumulative awards based on a member's specific participation history.
-     * @param {Array<Object>} participationHistory - The output from getMemberParticipationHistory.
-     * @param {string} endYear - The latest competition year to include.
-     * @returns {Object} - An object mapping award names to their counts.
-     */
-    function getMemberCumulativeAwards(participationHistory, endYear) {
-        const awardCounts = {};
-        for (const participation of participationHistory) {
-            if (participation.year > endYear) continue;
-
-            const yearData = achievementsData[participation.year];
-            if (yearData && yearData.competitions) {
-                for (const comp of yearData.competitions) {
-                    for (const award of comp.awards) {
-                        if (award.team === participation.teamId) {
-                            awardCounts[award.award] = (awardCounts[award.award] || 0) + 1;
-                        }
-                    }
-                }
-            }
-        }
-        return awardCounts;
-    }
-
-    function openModal(memberName, currentYear) {
-        const history = getMemberParticipationHistory(memberName);
-        if (history.length === 0) return;
-
-        modalName.textContent = memberName;
-        
-        // Populate role pills from the member's full history
-        modalPills.innerHTML = '';
-        history.forEach(p => {
-            const season = `${parseInt(p.year) - 1}-${p.year.slice(2)}`;
-            const pill = document.createElement('span');
-            pill.className = 'role-pill';
-            pill.textContent = `${season} (${p.teamId}) | ${p.role}`;
-            modalPills.appendChild(pill);
-        });
-
-        // Populate awards based on history up to the currently viewed year
-        modalAwards.innerHTML = '';
-        const cumulativeAwards = getMemberCumulativeAwards(history, currentYear);
-        const awardEntries = Object.entries(cumulativeAwards);
-
-        if (awardEntries.length > 0) {
-            awardEntries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([awardText, count]) => {
-                const li = document.createElement('li');
-                li.textContent = count > 1 ? `${count}x ${awardText}` : awardText;
-                modalAwards.appendChild(li);
-            });
-        } else {
-            const li = document.createElement('li');
-            li.textContent = 'No awards recorded during their participation.';
-            modalAwards.appendChild(li);
-        }
-        
-        modalOverlay.classList.remove('hidden');
-    }
-
-    function closeModal() {
-        modalOverlay.classList.add('hidden');
-    }
-
-    function bindClickListeners() {
-        document.querySelectorAll('.year-content:not(.hidden) .member-name').forEach(nameSpan => {
-            nameSpan.addEventListener('click', function() {
-                const memberName = this.dataset.memberName;
-                const currentYear = this.dataset.year; // The year of the roster they are clicking on
-                openModal(memberName, currentYear);
-            });
-        });
-    }
-
-    // --- Global Event Listeners (with cloning to prevent duplicates) ---
-    const setupAndBind = () => {
-        // This cloning trick is a simple way to remove all old listeners before adding new ones.
-        document.querySelectorAll('.member-name').forEach(span => span.replaceWith(span.cloneNode(true)));
-        bindClickListeners();
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (e) => (e.target === modalOverlay) && closeModal());
-    document.addEventListener('keydown', (e) => (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) && closeModal());
-    
-    // Initial binding
-    bindClickListeners();
-});
-</script>
