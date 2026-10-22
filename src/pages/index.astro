@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Image, Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import Marquee from '../components/Marquee.astro';
@@ -9,9 +9,9 @@ import TeamId from '../components/TeamId.astro';
 import SeasonTimeline from '../components/SeasonTimeline.astro';
 import ClosingCTA from '../components/ClosingCTA.astro';
 import statesPhoto from '../assets/photos/2025-nj-states-750b.png';
-import worldsPhoto from '../assets/photos/2025-worlds-dallas.jpeg';
 import girlPoweredPhoto from '../assets/photos/girl-powered-workshop.png';
 import { site } from '../data/site';
+import { photos, teamPhotos } from '../data/photos';
 import {
   allAwards,
   allEvents,
@@ -21,7 +21,9 @@ import {
   latestRosterSeason,
   memberCount,
   pad2,
+  seasonGame,
   seasonLabel,
+  seasonMeta,
   isCaptainRole,
   teamName,
   teamsForSeason,
@@ -34,7 +36,7 @@ const excellence = countByKind(awards).get('excellence') ?? 0;
 const eventsWithAwards = allEvents().length;
 const oldest = awardSeasons[awardSeasons.length - 1];
 const newest = awardSeasons[0];
-const awardScope = `${seasonLabel(oldest)} to ${seasonLabel(newest)} · selected events`;
+const awardScope = `${seasonLabel(oldest)} to ${seasonLabel(newest)} · all six teams`;
 
 // Teams (latest season with a published roster)
 const rosterSeason = latestRosterSeason;
@@ -47,7 +49,46 @@ const teams = teamsForSeason(rosterSeason).map((t) => ({
 const students = memberCount(rosterSeason);
 
 // The season story shown on the homepage: the most recent season with a full set of records.
-const storySeason = '2025';
+const storySeason = '2026';
+
+// World Championship appearances, from the milestones in seasons.json.
+const worlds = awardSeasons
+  .flatMap((season) => (seasonMeta(season)?.milestones ?? []).map((m) => ({ ...m, season })))
+  .filter((m) => /World Championship/.test(m.name))
+  .sort((a, b) => a.date.localeCompare(b.date));
+// The two Worlds stories, newest first. Facts come from events.vex.com and the teams' own posts.
+const worldsStories = [
+  {
+    year: '2026',
+    season: '2025–26',
+    team: '750S',
+    name: 'Sentinels',
+    where: 'St. Louis, MO · Apr 21–24, 2026',
+    photo: photos.worlds2026Banner,
+    text: '750S won Tournament Champions at Push Back at the Coliseum, Robot Skills Champion at our home tournament, and the Design Award at Pirate Popoff, then finished qualification 6th at the NJ State Championship. A 4th-place finish in New Jersey’s robot skills rankings earned the team its spot in St. Louis.',
+    facts: [
+      { k: 'Division', v: 'Spirit' },
+      { k: 'Field', v: '865 high school teams' },
+    ],
+  },
+  {
+    year: '2025',
+    season: '2024–25',
+    team: '750B',
+    name: 'Blitz',
+    where: 'Dallas, TX · May 6–8, 2025',
+    photo: photos.worlds2025Dallas,
+    text: '750B reached the final of the NJ State Championship at NJIT and won the Think Award, the judged award for programming. Both results qualified the team for the World Championship in Dallas.',
+    facts: [
+      { k: 'Division', v: 'Math' },
+      { k: 'Field', v: '831 high school teams' },
+    ],
+  },
+];
+
+const worldsScope = worlds
+  .map((m) => `${m.teams.join(', ')} · ${m.location.split(', ').slice(-2, -1)[0]} ${m.date.slice(0, 4)}`)
+  .join(' · ');
 
 const disciplines = [
   { title: 'Design', text: 'Sketch ideas, model mechanisms in CAD, and decide what is worth building before anything gets cut.' },
@@ -156,14 +197,14 @@ const disciplines = [
       <div class="results__head">
         <SectionHead num="02" label="On the record" id="results-title" title={`Results, <span class="gold">in context.</span>`} />
         <p class="results__note mute" data-reveal style="--d:1">
-          These numbers are calculated from the records published on this site: selected events from {seasonLabel(oldest)} through {seasonLabel(newest)}, not a complete lifetime history. One team award means one team receiving one award at one event.
+          These numbers count every team award listed on VEX Events for our six teams from {seasonLabel(oldest)} through {seasonLabel(newest)}. Earlier seasons are not included yet. One team award means one team receiving one award at one event.
         </p>
       </div>
       <div class="results__grid">
         <Stat value={teamAwards} label="Team awards" scope={awardScope} d={0} />
         <Stat value={eventsWithAwards} label="Events with an SB award" scope={awardScope} d={1} />
         <Stat value={excellence} label="Excellence Awards" scope={`The top award at a VEX event · ${seasonLabel(oldest)} to ${seasonLabel(newest)}`} d={2} />
-        <Stat value={1} label="World Championship team" scope="750B · Dallas, TX · May 2025" d={3} />
+        <Stat value={worlds.length} label={worlds.length === 1 ? 'World Championship appearance' : 'World Championship appearances'} scope={worldsScope} d={3} />
       </div>
       <a class="link-arrow results__more" href="/achievements" data-reveal>
         Open the trophy case
@@ -186,14 +227,25 @@ const disciplines = [
         {teams.map((t, i) => (
           <li data-reveal style={`--d:${i % 3}`}>
             <a class="team-tile" href={`/roster?season=${rosterSeason}#team-${rosterSeason}-${t.id}`}>
-              <span class="team-tile__bg display display--italic outline" aria-hidden="true">{t.letter}</span>
+              {teamPhotos[t.id] && (
+                <span class="team-tile__photo" aria-hidden="true">
+                  <Image
+                    src={teamPhotos[t.id].src}
+                    alt=""
+                    widths={[360, 560, 800]}
+                    sizes="(min-width: 1024px) 30vw, 48vw"
+                    style={`object-position:${teamPhotos[t.id].position}`}
+                  />
+                  <span class="team-tile__cap">{teamPhotos[t.id].caption}</span>
+                </span>
+              )}
               <span class="team-tile__top">
                 <TeamId id={t.id} class="team-tile__id" />
                 {t.name && <span class="label label--sm">“{t.name}”</span>}
               </span>
               <span class="team-tile__meta">
                 <span><span class="label label--sm">Members</span><strong>{pad2(t.members.length)}</strong></span>
-                <span><span class="label label--sm">Team awards</span><strong>{pad2(t.awardCount)}</strong></span>
+                <span><span class="label label--sm">Awards</span><strong>{pad2(t.awardCount)}</strong></span>
               </span>
               <span class="team-tile__captain">
                 <span class="label label--sm">{t.captains.length > 1 ? 'Captains' : 'Captain'}</span>
@@ -215,9 +267,9 @@ const disciplines = [
   <section class="section season" id="season" aria-labelledby="season-title">
     <div class="wrap">
       <div class="season__head">
-        <SectionHead num="04" label={`Season story · ${seasonLabel(storySeason)} High Stakes`} id="season-title" title={`New Jersey <span class="gold">to Dallas.</span>`} />
+        <SectionHead num="04" label={`Season story · ${seasonLabel(storySeason)} ${seasonGame(storySeason)}`} id="season-title" title={`New Jersey <span class="gold">to St. Louis.</span>`} />
         <p class="mute season__intro" data-reveal style="--d:1">
-          The 2024–25 season through our recorded awards, event by event, ending at the World Championship. Each card links to the official results.
+          The {seasonLabel(storySeason)} season through every team award we earned, event by event, ending with 750S at the World Championship. Each card links to the official results.
         </p>
       </div>
       <SeasonTimeline season={storySeason} />
@@ -227,44 +279,45 @@ const disciplines = [
     </div>
   </section>
 
-  <!-- ============ 05 FEATURE ============ -->
-  <section class="section feature" id="worlds-2025" aria-labelledby="feature-title">
-    <div class="wrap feature__grid">
-      <figure class="feature__media">
-        <div class="frame feature__frame" data-reveal="mask">
-          <Picture
-            src={worldsPhoto}
-            formats={['avif', 'webp']}
-          fallbackFormat="jpg"
-            widths={[480, 800]}
-            sizes="(min-width: 1024px) 40vw, 92vw"
-            alt="A group of South Brunswick Robotics members standing outside the 2025 VEX Robotics World Championship beneath a banner that reads ‘Welcome to the largest robotics competition in the world’."
-            class="feature__img"
-          />
-        </div>
-        <figcaption class="caption">SB Robotics members at the World Championship · Dallas, TX · May 2025</figcaption>
-      </figure>
-
-      <div class="feature__copy">
-        <p class="feature__stamp" data-reveal="fade"><span class="chip chip--gold">Archive</span><span class="label">Spring 2025 · 2024–25 season</span></p>
-        <h2 id="feature-title" class="feature__title display display--italic" data-reveal>
-          <span class="outline">From Newark</span>
-          <span>to Dallas</span>
-        </h2>
-        <div class="prose-sb" data-reveal style="--d:1">
-          <p>
-            On March 15, 2025, <strong>750B</strong> reached the final of the New Jersey State Championship at NJIT and won the <strong>Think Award</strong>, the judged award for programming. Both results qualified the team for the VEX Robotics World Championship.
-          </p>
-          <p>
-            From May 6 to 8, 750B competed in the Math division of the high school V5RC event at the Kay Bailey Hutchison Convention Center in Dallas, one of 831 teams entered.
-          </p>
-        </div>
-        <dl class="feature__facts" data-reveal style="--d:2">
-          <div><dt class="label label--sm">Team</dt><dd><TeamId id="750B" /> Blitz</dd></div>
-          <div><dt class="label label--sm">Qualified at</dt><dd>NJ States · Mar 15, 2025</dd></div>
-          <div><dt class="label label--sm">Qualifying results</dt><dd>Tournament Finalists · Think Award</dd></div>
-          <div><dt class="label label--sm">Worlds</dt><dd>May 6–8, 2025 · Math division</dd></div>
-        </dl>
+  <!-- ============ 05 WORLDS ============ -->
+  <section class="section feature" id="worlds" aria-labelledby="feature-title">
+    <div class="wrap">
+      <div class="feature__head">
+        <SectionHead label="World Championship" id="feature-title" title={`Back-to-back <span class="gold">at Worlds.</span>`} />
+        <p class="mute feature__intro" data-reveal style="--d:1">
+          Two different South Brunswick teams reached the VEX Robotics World Championship in consecutive seasons: 750B in 2025 and 750S in 2026.
+        </p>
+      </div>
+      <div class="worlds">
+        {worldsStories.map((w, i) => (
+          <article class="wcard" aria-labelledby={`wcard-${w.year}`}>
+            <figure class="wcard__media">
+              <div class="frame wcard__frame" data-reveal="mask" style={`--d:${i}`}>
+                <Picture
+                  src={w.photo.src}
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  widths={[480, 800, 1100]}
+                  sizes="(min-width: 1024px) 44vw, 92vw"
+                  alt={w.photo.alt}
+                  style={`object-position:${w.photo.position}`}
+                />
+                <span class="wcard__year display display--italic" aria-hidden="true">{w.year}</span>
+              </div>
+              <figcaption class="caption">{w.photo.caption}</figcaption>
+            </figure>
+            <div class="wcard__body" data-reveal style={`--d:${i + 1}`}>
+              <p class="wcard__stamp"><span class="chip chip--gold">{w.season} season</span><span class="label">{w.where}</span></p>
+              <h3 class="wcard__title" id={`wcard-${w.year}`}><TeamId id={w.team} /> <span>{w.name}</span></h3>
+              <p class="wcard__text">{w.text}</p>
+              <dl class="wcard__facts">
+                {w.facts.map((f) => (
+                  <div><dt class="label label--sm">{f.k}</dt><dd>{f.v}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   </section>
@@ -539,6 +592,46 @@ const disciplines = [
   .team-tile:hover, .team-tile:focus-visible { background: var(--color-coal); }
   .team-tile:hover::after, .team-tile:focus-visible::after { transform: scaleX(1); }
   .team-tile:focus-visible { outline-offset: -4px; }
+  .team-tile__photo {
+    position: relative;
+    display: block;
+    margin: -1.75rem -1.75rem 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-graphite);
+  }
+  .team-tile__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.55) contrast(1.05) brightness(0.8);
+    transform: scale(1.02);
+    transition: filter var(--dur) ease, transform var(--dur-slow) var(--ease-out-expo);
+  }
+  .team-tile__photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--color-ink) 0%, rgb(10 10 11 / 0.2) 55%, rgb(10 10 11 / 0.35) 100%);
+    transition: opacity var(--dur) ease;
+  }
+  .team-tile:hover .team-tile__photo :global(img), .team-tile:focus-visible .team-tile__photo :global(img) { filter: none; transform: scale(1.06); }
+  .team-tile:hover .team-tile__photo::after, .team-tile:focus-visible .team-tile__photo::after { background: linear-gradient(to top, var(--color-coal) 0%, rgb(17 17 19 / 0.1) 55%, rgb(17 17 19 / 0.25) 100%); }
+  .team-tile__cap {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 1;
+    padding: 0.25rem 0.45rem;
+    background: rgb(10 10 11 / 0.7);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-paper);
+  }
+  .team-tile__photo + .team-tile__top { margin-top: -2.4rem; position: relative; z-index: 1; }
   .team-tile__bg {
     position: absolute;
     right: -0.06em;
@@ -564,8 +657,10 @@ const disciplines = [
     height: 44px;
     display: grid;
     place-items: center;
+    z-index: 2;
     border: 1px solid var(--color-line-strong);
     border-radius: 50%;
+    background: rgb(10 10 11 / 0.55);
     transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast), transform var(--dur) var(--ease-out-expo);
   }
   .team-tile:hover .team-tile__go, .team-tile:focus-visible .team-tile__go { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-ink); transform: rotate(45deg); }
@@ -579,6 +674,9 @@ const disciplines = [
     .team-tile__go { width: 34px; height: 34px; top: 0.9rem; right: 0.8rem; }
     .team-tile__go :global(svg) { width: 16px; height: 16px; }
     .team-tile__bg { font-size: 9rem; }
+    .team-tile__photo { margin: -1.1rem -1rem 0; }
+    .team-tile__photo + .team-tile__top { margin-top: -1.6rem; }
+    .team-tile__cap { display: none; }
   }
   .teams__foot { margin-top: 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem 2rem; }
 
@@ -589,30 +687,41 @@ const disciplines = [
   .season__intro { max-width: 34rem; }
   .season__foot { margin-top: 2.5rem; }
 
-  /* ---------------- Feature ---------------- */
-  .feature__grid { display: grid; gap: 3rem; align-items: center; }
-  @media (min-width: 1024px) { .feature__grid { grid-template-columns: 5fr 7fr; gap: clamp(3rem, 6vw, 6rem); } }
-  .feature__frame { aspect-ratio: 1 / 1; }
-  .feature__frame :global(picture) { display: block; height: 100%; }
-  .feature__frame :global(img) { object-position: 50% 0%; }
-  .feature__stamp { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .feature__title {
-    margin: 1.5rem 0 2rem;
-    display: flex;
-    flex-direction: column;
-    font-size: clamp(3.4rem, 8vw, 7.5rem);
+  /* ---------------- Worlds ---------------- */
+  .feature { border-top: 1px solid var(--color-line); }
+  .feature__head { display: grid; gap: 1.5rem; align-items: end; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+  @media (min-width: 1024px) { .feature__head { grid-template-columns: 7fr 5fr; gap: 4rem; } }
+  .feature__intro { max-width: 34rem; }
+  .worlds { display: grid; gap: 3.5rem 2.5rem; }
+  @media (min-width: 900px) { .worlds { grid-template-columns: 1fr 1fr; } }
+  .wcard { display: grid; gap: 1.5rem; align-content: start; }
+  .wcard__frame { aspect-ratio: 4 / 5; }
+  .wcard__frame :global(picture) { display: block; height: 100%; }
+  .wcard__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 10 11 / 0.75), transparent 45%);
+    pointer-events: none;
   }
-  .feature__copy .prose-sb { font-size: 1.075rem; }
-  .feature__facts {
-    margin: 2.5rem 0 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.5rem 2rem;
-    max-width: 40rem;
+  .wcard__year {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.6rem;
+    z-index: 1;
+    font-size: clamp(4rem, 8vw, 7rem);
+    line-height: 0.8;
+    color: var(--color-gold);
   }
-  .feature__facts div { border-top: 1px solid var(--color-line-strong); padding-top: 0.75rem; }
-  .feature__facts dd { margin: 0.4rem 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; text-transform: uppercase; line-height: 1.1; }
-  .feature__facts :global(.team-id) { font-size: 1.6rem; margin-right: 0.2rem; }
+  .wcard__body { display: grid; gap: 1rem; justify-items: start; }
+  .wcard__stamp { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .wcard__title { display: flex; align-items: baseline; gap: 0.6rem; font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: clamp(2.6rem, 4.6vw, 3.6rem); text-transform: uppercase; line-height: 0.9; }
+  .wcard__title :global(.team-id) { font-size: 1em; }
+  .wcard__title span:last-child { font-style: normal; font-weight: 700; font-size: 0.5em; color: var(--color-mute); }
+  .wcard__text { color: var(--color-mute); max-width: 54ch; }
+  .wcard__facts { margin: 0; width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; }
+  .wcard__facts div { border-top: 1px solid var(--color-line-strong); padding-top: 0.7rem; }
+  .wcard__facts dd { margin: 0.35rem 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; text-transform: uppercase; line-height: 1.1; }
 
   /* ---------------- Community ---------------- */
   .community { border-top: 1px solid var(--color-line); }

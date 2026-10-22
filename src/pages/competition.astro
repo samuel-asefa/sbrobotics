@@ -10,11 +10,13 @@ import ClosingCTA from '../components/ClosingCTA.astro';
 import pitsPhoto from '../assets/photos/sbhs-tournament-pits.jpeg';
 import { eventUrl, mailto, site } from '../data/site';
 import { allEvents, awardKind, formatDate, hostedEvents } from '../lib/data';
+import { eventPhotos } from '../data/photos';
 
 const sorted = [...hostedEvents].sort((a, b) => b.date.localeCompare(a.date));
 const [latest, ...archive] = sorted;
 const results = (code: string) => allEvents().find((e) => e.eventCode === code)?.awards ?? [];
 const latestResults = results(latest.eventCode);
+const latestPhotos = eventPhotos[latest.eventCode] ?? {};
 const d = new Date(`${latest.date}T12:00:00Z`);
 const day = d.getUTCDate();
 const month = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d);
@@ -75,6 +77,23 @@ const intro = isPast
         <div><dt class="label label--sm">Format</dt><dd>{latest.format}</dd></div>
         <div><dt class="label label--sm">Skills challenge</dt><dd>{latest.skills ? 'Offered' : 'Not offered'}</dd></div>
       </dl>
+
+      {latestPhotos.hero && (
+        <figure class="ev__photo">
+          <div class="frame ev__frame" data-reveal="mask">
+            <Picture
+              src={latestPhotos.hero.src}
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              widths={[640, 1000, 1440]}
+              sizes="(min-width: 1440px) 1344px, 94vw"
+              alt={latestPhotos.hero.alt}
+              style={`object-position:${latestPhotos.hero.position}`}
+            />
+          </div>
+          <figcaption class="caption">{latestPhotos.hero.caption}</figcaption>
+        </figure>
+      )}
     </div>
   </section>
 
@@ -117,6 +136,22 @@ const intro = isPast
         <div>
           <SectionHead num="03" label="On home turf" id="home-title" title={`SB teams <span class="gold">at our event.</span>`} />
           <p class="mute home__note" data-reveal>Awards won by South Brunswick teams at our own tournament, from the official results.</p>
+          {latestPhotos.results && (
+            <figure class="home__photo">
+              <div class="frame home__frame" data-reveal="mask">
+                <Picture
+                  src={latestPhotos.results.src}
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  widths={[480, 800]}
+                  sizes="(min-width: 1024px) 36vw, 92vw"
+                  alt={latestPhotos.results.alt}
+                  style={`object-position:${latestPhotos.results.position}`}
+                />
+              </div>
+              <figcaption class="caption">{latestPhotos.results.caption}</figcaption>
+            </figure>
+          )}
         </div>
         <ul class="wins">
           {latestResults.map((a, i) => (
@@ -285,8 +320,14 @@ const intro = isPast
   .atable--compact th, .atable--compact td { padding: 0.6rem 0.5rem 0.6rem 0; }
 
   .home__grid { display: grid; gap: 2.5rem; align-items: end; }
-  @media (min-width: 1024px) { .home__grid { grid-template-columns: 5fr 7fr; gap: 4rem; } }
+  @media (min-width: 1024px) { .home__grid { grid-template-columns: 5fr 7fr; gap: 4rem; align-items: start; } }
   .home__note { margin-top: 1rem; max-width: 34rem; }
+  .home__photo { margin-top: 2rem; }
+  .home__frame { aspect-ratio: 4 / 3; }
+  .home__frame :global(picture), .ev__frame :global(picture) { display: block; height: 100%; }
+  .ev__photo { margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .ev__frame { aspect-ratio: 16 / 9; }
+  @media (max-width: 767px) { .ev__frame { aspect-ratio: 4 / 3; } }
   .wins { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-line); }
   .wins li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-line); }
   .wins :global(.wins__icon) { color: var(--color-gold); }

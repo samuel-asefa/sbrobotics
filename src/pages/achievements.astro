@@ -5,7 +5,9 @@ import AwardIcon from '../components/AwardIcon.astro';
 import TeamId from '../components/TeamId.astro';
 import Icon from '../components/Icon.astro';
 import ClosingCTA from '../components/ClosingCTA.astro';
+import { Picture } from 'astro:assets';
 import { eventUrl } from '../data/site';
+import { photos } from '../data/photos';
 import {
   AWARD_KINDS,
   allAwards,
@@ -29,6 +31,7 @@ const kinds = AWARD_KINDS.filter((k) => (kindCounts.get(k.kind) ?? 0) > 0);
 const teams = allTeamIds();
 const teamsAwarded = new Set(awards.map((a) => a.team)).size;
 const excellence = kindCounts.get('excellence') ?? 0;
+const stripPhotos = [photos.excellence750C, photos.sbhsAwards, photos.worlds2026RobotNight];
 
 const groups = awardSeasons.map((season) => ({
   season,
@@ -44,7 +47,7 @@ const groups = awardSeasons.map((season) => ({
     index="03"
     label="Awards"
     lines={[{ text: 'Trophy', style: 'outline' }, { text: 'Case', style: 'gold' }]}
-    intro="Team awards from the events we have on record, each linked to the official results. This is a selected archive covering 2023–24 onward, not a complete history of the program."
+    intro="Every team award from 2023–24 through 2025–26, checked against each team’s VEX Events page and linked to the official results. Seasons before 2023–24 are not in the archive yet."
     meta={[
       { k: 'Team awards', v: String(awards.length) },
       { k: 'Events', v: String(events.length) },
@@ -104,6 +107,25 @@ const groups = awardSeasons.map((season) => ({
           </li>
         ))}
       </ul>
+
+      <div class="strip" aria-label="Photos from recent events">
+        {stripPhotos.map((ph, i) => (
+          <figure class:list={['strip__item', `strip__item--${i}`]}>
+            <div class="frame strip__frame" data-reveal="mask" style={`--d:${i}`}>
+              <Picture
+                src={ph.src}
+                formats={['avif', 'webp']}
+                fallbackFormat="jpg"
+                widths={[400, 700, 1000]}
+                sizes={i === 1 ? '(min-width: 900px) 46vw, 92vw' : '(min-width: 900px) 24vw, 92vw'}
+                alt={ph.alt}
+                style={`object-position:${ph.position}`}
+              />
+            </div>
+            <figcaption class="caption">{ph.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -150,7 +172,7 @@ const groups = awardSeasons.map((season) => ({
             ))}
             {g.events.map((e) => (
               <li class="event" data-event data-season={g.season}>
-                <time class="event__date" datetime={e.date}>{formatDate(e.date)}</time>
+                <time class="event__date" datetime={e.date}>{formatRange(e.date, e.endDate)}</time>
                 <div class="event__body">
                   <h4 class="event__name">{e.name}</h4>
                   <p class="event__loc label label--sm">
@@ -337,6 +359,12 @@ const groups = awardSeasons.map((season) => ({
   .trophy__blurb { color: var(--color-mute); font-size: 0.925rem; line-height: 1.55; }
   .trophy:global(.is-zero) { opacity: 0.35; }
 
+  .strip { margin-top: clamp(3rem, 6vw, 4.5rem); display: grid; gap: 1.5rem 1rem; }
+  @media (min-width: 900px) { .strip { grid-template-columns: 1fr 2fr 1fr; align-items: end; } }
+  .strip__frame { aspect-ratio: 3 / 4; }
+  .strip__item--1 .strip__frame { aspect-ratio: 4 / 3; }
+  @media (max-width: 899px) { .strip__frame, .strip__item--1 .strip__frame { aspect-ratio: 4 / 3; } }
+  .strip__frame :global(picture) { display: block; height: 100%; }
   .archive { border-top: 1px solid var(--color-line); padding-top: clamp(3.5rem, 7vw, 6rem); }
   .archive__head .h2 { margin-top: 0.75rem; max-width: none; }
 

@@ -23,7 +23,7 @@ type Stop = {
 
 const events: Stop[] = allEvents()
   .filter((e) => e.season === season)
-  .map((e) => ({ date: e.date, dateLabel: formatDate(e.date), name: e.name, location: e.location, url: e.url, hosted: e.hosted, awards: e.awards }));
+  .map((e) => ({ date: e.date, dateLabel: formatRange(e.date, e.endDate), name: e.name, location: e.location, url: e.url, hosted: e.hosted, awards: e.awards }));
 const milestones: Stop[] = (seasonMeta(season)?.milestones ?? []).map((m) => ({
   date: m.date,
   dateLabel: formatRange(m.date, m.endDate),

@@ -1,5 +1,7 @@
 ---
+import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import { photos } from '../data/photos';
 import PageHero from '../components/PageHero.astro';
 import SectionHead from '../components/SectionHead.astro';
 import TeamId from '../components/TeamId.astro';
@@ -33,6 +35,7 @@ const history = [
   { when: 'Mar 15, 2025', title: '750B qualifies for Worlds', text: '750B finishes as Tournament Finalists and wins the Think Award at the NJ State Championship.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-24-9258') } },
   { when: 'May 2025', title: '750B competes at the World Championship', text: 'The team competes in the Math division of the high school event in Dallas, Texas.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-24-8909') } },
   { when: 'Feb 21, 2026', title: 'We host a Push Back tournament', text: '750C wins the Excellence Award at our home event; 750S, 750E, and 750W also take home awards.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-25-0079') } },
+  { when: 'Apr 2026', title: '750S competes at the World Championship', text: 'After a 4th-place finish in New Jersey’s robot skills rankings, 750S competes in the Spirit division of the high school event in St. Louis, Missouri.', source: { label: 'Official event page', href: eventUrl('RE-V5RC-26-4025') } },
 ];
 ---
 <Layout title="About" description="What South Brunswick Robotics does, how the VEX V5 Robotics Competition works, our history since 2012, and what to expect if you join.">
@@ -70,6 +73,23 @@ const history = [
       </ol>
     </div>
   </section>
+
+  <figure class="band">
+    <div class="frame band__frame" data-reveal="mask">
+      <div class="band__img" data-parallax="0.06">
+        <Picture
+          src={photos.robot750B.src}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          widths={[800, 1200, 1440]}
+          sizes="100vw"
+          alt={photos.robot750B.alt}
+          style={`object-position:${photos.robot750B.position}`}
+        />
+      </div>
+    </div>
+    <figcaption class="caption wrap">{photos.robot750B.caption}</figcaption>
+  </figure>
 
   <!-- How the program is organized -->
   <section class="section org" aria-labelledby="org-title">
@@ -195,6 +215,11 @@ const history = [
   .fact:nth-child(5) .fact__num { -webkit-text-stroke-color: var(--color-ink); }
   @media (min-width: 1100px) { .fact:nth-child(5) { grid-column: span 2; } }
 
+  .band { margin: 0 0 clamp(3rem, 6vw, 5rem); }
+  .band__frame { height: clamp(320px, 52vw, 640px); }
+  .band__img { position: absolute; inset: 0; }
+  .band__img :global(picture), .band__img :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .band__img :global(img) { filter: saturate(0.8) brightness(0.85); }
   .org { background: var(--color-coal); border-block: 1px solid var(--color-line); }
   .org__grid { margin-top: clamp(3rem, 6vw, 4.5rem); display: grid; gap: 3rem; }
   @media (min-width: 1024px) { .org__grid { grid-template-columns: 7fr 5fr; gap: 4rem; } }

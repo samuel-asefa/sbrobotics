@@ -16,6 +16,7 @@ type RosterFile = Record<string, RosterSeason>;
 type AwardRow = { award: string; team: string };
 type Competition = {
   date: string;
+  endDate?: string;
   name: string;
   location: string;
   eventCode: string;

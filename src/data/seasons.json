@@ -16,7 +16,7 @@
   "2026": {
     "label": "2025–26",
     "game": "Push Back",
-    "recordNote": "Partial record: only the tournament we hosted on Feb 21, 2026 has been entered so far.",
+    "recordNote": "All team awards for the 2025–26 season, from each team’s VEX Events page.",
     "teamNames": {
       "750B": "Blitz",
       "750C": "Cobras",
@@ -25,14 +25,26 @@
       "750S": "Sentinels",
       "750W": "Wolves"
     },
-    "milestones": [],
+    "milestones": [
+      {
+        "date": "2026-04-21",
+        "endDate": "2026-04-24",
+        "name": "VEX Robotics World Championship – High School",
+        "location": "America’s Center Convention Complex, St. Louis, MO",
+        "eventCode": "RE-V5RC-26-4025",
+        "teams": [
+          "750S"
+        ],
+        "summary": "750S competed in the Spirit division of the high school V5RC event, one of 865 teams entered."
+      }
+    ],
     "partialRoster": true,
     "rosterNote": "Only team and club leadership were announced for 2025–26 (June 27, 2025). Full team lists for this season are not on record."
   },
   "2025": {
     "label": "2024–25",
     "game": "High Stakes",
-    "recordNote": "Selected award records from the 2024–25 season.",
+    "recordNote": "All team awards for the 2024–25 season, from each team’s VEX Events page.",
     "teamNames": {
       "750B": "Blitz",
       "750C": "Cobras",
@@ -58,7 +70,7 @@
   "2024": {
     "label": "2023–24",
     "game": "Over Under",
-    "recordNote": "Selected award records from the 2023–24 season.",
+    "recordNote": "All team awards for the 2023–24 season, from each team’s VEX Events page.",
     "teamNames": {},
     "milestones": []
   }
